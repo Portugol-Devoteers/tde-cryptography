@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <utils.h>
+#include "utils.h"
 
 /**
  * Função que realiza a operação xor entre dois vetores de 16 bytes.
