@@ -50,9 +50,50 @@ void byteSubTest()
   printf("========================================\n\n\n");
 }
 
+void testShiftRow()
+{
+  printTestDescribe("testShiftRow");
+
+  unsigned char expectEncrypt[] = {0x01, 0x06, 0x0B, 0x10,
+                                   0x05, 0x0A, 0x0F, 0x04,
+                                   0x09, 0x0E, 0x03, 0x08,
+                                   0x0D, 0x02, 0x07, 0x0C};
+  unsigned char expectDecrypt[] = {0x01, 0x0E, 0x0B, 0x08,
+                                   0x05, 0x02, 0x0F, 0x0C,
+                                   0x09, 0x06, 0x03, 0x10,
+                                   0x0D, 0x0A, 0x07, 0x04};
+
+  int i;
+  for (i = -1; i < 2; i += 2)
+  {
+    unsigned char state[16] = {0x01, 0x02, 0x03, 0x04,
+                               0x05, 0x06, 0x07, 0x08,
+                               0x09, 0x0A, 0x0B, 0x0C,
+                               0x0D, 0x0E, 0x0F, 0x10};
+    unsigned char *expect;
+
+    int action = i * -2 + i;
+    if (action == 1)
+    {
+      printf("encrypt\n");
+      expect = expectEncrypt;
+    }
+    else
+    {
+      printf("decrypt\n");
+      expect = expectDecrypt;
+    }
+
+    shiftRow(state, action);
+    eqVetor(state, expect);
+  }
+  printf("========================================\n\n\n");
+}
+
 int main()
 {
   addRoundKeyTest();
   byteSubTest();
+  testShiftRow();
   return 0;
 }

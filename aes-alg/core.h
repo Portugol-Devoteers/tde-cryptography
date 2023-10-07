@@ -33,3 +33,41 @@ extern void byteSub(unsigned char *state, unsigned char action)
     state[i] = action == 1 ? sBox[x][y] : invSBox[x][y];
   }
 }
+
+#define COLUMNS 4
+typedef struct
+{
+  unsigned value : COLUMNS; // 4 bits
+} index;
+
+#define addValue(n, qt) n.value += qt
+
+/**
+ * Função que embaralha as linhas do state.
+ * @param state O state a ser embaralhado.
+ * @param action 1 para embaralhar, -1 para desembaralhar.
+ * @return void - O state é substituido diretamente.
+ */
+extern void shiftRow(unsigned char *state, unsigned char action)
+{
+  int line, col, repeatTime;
+  unsigned char aux, oldVal;
+  for (line = 0; line < COLUMNS; line++)
+  {
+
+    for (repeatTime = 0; repeatTime < line; repeatTime++)
+    {
+      index i = {line};
+
+      oldVal = state[i.value];
+      for (col = 0; col <= COLUMNS; col++)
+      {
+        aux = state[i.value];
+
+        state[i.value] = oldVal;
+        oldVal = aux;
+        addValue(i, COLUMNS * (-action));
+      }
+    }
+  }
+}
