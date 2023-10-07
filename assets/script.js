@@ -4,7 +4,7 @@ $('.open_button').on('click', () => {
 
 $('.select').on('click', () => {
     let $options = $('.options');
-    let $selectIcon = $('.select-icon');
+    let $selectIcon = $('.select-icon-arrow');
 
     if ($options.is(':visible')) {
         $options.fadeOut('fast');
@@ -17,7 +17,7 @@ $('.select').on('click', () => {
 
 $(document).on('click', (event) => {
     let $options = $('.options');
-    let $selectIcon = $('.select-icon');
+    let $selectIcon = $('.select-icon-arrow');
 
     if (
         !$options.is(event.target) &&

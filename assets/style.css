@@ -9,7 +9,7 @@
     --bordaBotao: #19181840;
     --corFundo: #0f0f0f;
     --cinzaPrimario: #4c4c4c;
-    --hoverCopy: #201f1f;
+    --hoverCopy: #302f2f;
     --inputPlaceholder: #ffffff50;
     --contentWidth: 500px;
     --borderRadius: 6px;
@@ -134,20 +134,27 @@ section {
 .content-top {
     position: relative;
     width: 100%;
+    background-color: var(--corPrimaria);
+    border-radius: var(--borderRadius);
+    border: 1px solid var(--corTransparente);
+    margin-bottom: 10px;
 }
 
 .select {
-    border-radius: var(--borderRadius) var(--borderRadius) 0 0;
-    background-color: var(--corPrimaria);
     padding-left: 20px;
     padding-top: 10px;
     color: var(--cinzaPrimario);
     cursor: pointer;
     font-weight: 500;
     position: relative;
+    max-width: 200px;
 }
 
-.select-icon {
+.select:hover .select-icon-arrow {
+    color: var(--hoverCopy);
+}
+
+.select-icon-arrow {
     cursor: pointer;
     position: absolute;
     color: var(--cinzaPrimario);
@@ -156,6 +163,19 @@ section {
     font-size: 12px;
     transition: 0.2s all;
     transform: rotate(180deg);
+}
+
+.copy-icon {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: var(--cinzaPrimario);
+    cursor: pointer;
+    transition: 0.2s all;
+}
+
+.copy-icon:hover {
+    color: var(--hoverCopy);
 }
 
 .options {
@@ -181,14 +201,12 @@ section {
 .text {
     resize: none;
     outline: none;
-    border: 1px solid var(--corTransparente);
-    border-top: none;
     background-color: var(--corPrimaria);
     color: white;
-    border-radius: 0 0 var(--borderRadius) var(--borderRadius);
     padding: 20px;
     width: 100%;
     font-weight: 500;
+    border: none;
 }
 
 .content-bottom {
