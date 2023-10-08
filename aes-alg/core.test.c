@@ -90,10 +90,57 @@ void testShiftRow()
   printf("========================================\n\n\n");
 }
 
+void testMixColumn()
+{
+  printTestDescribe("testMixColumn");
+
+  unsigned char decryptState[] = {
+      0x04, 0x66, 0x81, 0xE5,
+      0xE0, 0xCB, 0x19, 0x9A,
+      0x48, 0xF8, 0xD3, 0x7A,
+      0x28, 0x06, 0x26, 0x4C};
+  unsigned char encryptState[] = {
+      0xD4, 0xBF, 0x5D, 0x30,
+      0xE0, 0xB4, 0x52, 0xAE,
+      0xB8, 0x41, 0x11, 0xF1,
+      0x1E, 0x27, 0x98, 0xE5};
+  unsigned char expectDecrypt[] = {
+      0xD4, 0xBF, 0x5D, 0x30,
+      0xE0, 0xB4, 0x52, 0xAE,
+      0xB8, 0x41, 0x11, 0xF1,
+      0x1E, 0x27, 0x98, 0xE5};
+  unsigned char expectEncrypt[] = {
+      0x04, 0x66, 0x81, 0xE5,
+      0xE0, 0xCB, 0x19, 0x9A,
+      0x48, 0xF8, 0xD3, 0x7A,
+      0x28, 0x06, 0x26, 0x4C};
+
+  int i;
+  for (i = -1; i < 2; i += 2)
+  {
+    int action = i * -2 + i;
+
+    if (action == 1)
+    {
+      printf("encrypt\n");
+      mixColumn(encryptState, action);
+      eqVetor(encryptState, expectEncrypt);
+    }
+    else
+    {
+      printf("decrypt\n");
+      mixColumn(decryptState, action);
+      eqVetor(decryptState, expectDecrypt);
+    }
+  }
+  printf("========================================\n\n\n");
+}
+
 int main()
 {
   addRoundKeyTest();
   byteSubTest();
   testShiftRow();
+  testMixColumn();
   return 0;
 }

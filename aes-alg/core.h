@@ -71,3 +71,60 @@ extern void shiftRow(unsigned char *state, unsigned char action)
     }
   }
 }
+
+/**
+ * Realiza a soma de dois valores de acordo com uma tabela de substituição
+ * e retorna o resultado dessa soma.
+ *
+ * @param n1 O primeiro valor a ser somado.
+ * @param n2 O segundo valor a ser somado.
+ * @param table A tabela de substituição (E-Table ou L-Table) usada para a soma.
+ *
+ * @return O valor resultante da soma, obtido a partir da tabela de substituição.
+ *         Esse valor é calculado somando-se n1 e n2, ajustando o resultado se ele
+ *         exceder 0xFF e, em seguida, consultando a tabela de substituição para obter
+ *         o valor final.
+ */
+unsigned char sumWithEorL(unsigned char n1, unsigned char n2)
+{
+  unsigned char n1L = getEorLValue(n1, lTable);
+  unsigned char n2L = getEorLValue(n2, lTable);
+  unsigned int lSum = n1L + n2L;
+  if (lSum > 0xFF)
+    lSum -= 0xFF;
+  return getEorLValue((unsigned char)lSum, eTable);
+}
+
+/**
+ * Função que realiza a operação de multiplicação de matrizes.
+ * @param state O state a ser embaralhado.
+ * @param action 1 para embaralhar, -1 para desembaralhar.
+ * @return void - O state é substituido diretamente.
+ */
+extern void mixColumn(unsigned char *state, unsigned char action)
+{
+  unsigned char(*matrix)[4] = action == 1 ? multiplicationMatrixEncrypt : multiplicationMatrixDecrypt;
+  for (int j = 0; j < 4; j++)
+  {
+    unsigned char aux[4];
+    int stateIndex;
+    for (int i = 0; i < 4; i++)
+    {
+      stateIndex = i + (4 * j);
+      aux[i] = state[stateIndex];
+    }
+
+    for (int i = 0; i < 4; i++)
+    {
+      stateIndex = i + (4 * j);
+
+      unsigned char colsXor = 0;
+      for (int k = 0; k < 4; k++)
+      {
+        colsXor ^= sumWithEorL(aux[k], matrix[i][k]);
+      }
+
+      state[stateIndex] = colsXor;
+    }
+  }
+}
