@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "core.h"
+#include "../core.h"
 #include "test.utils.h"
 
 void addRoundKeyTest()
@@ -11,7 +11,7 @@ void addRoundKeyTest()
   unsigned char expectXor[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x1B, 0x06, 0x45, 0x1C, 0x45, 0x19, 0x00, 0x59, 0x00};
 
   addRoundKey(state, key);
-  eqVetor(state, expectXor);
+  eqVetor(state, expectXor, 16);
 
   printf("========================================\n\n\n");
 }
@@ -45,7 +45,7 @@ void byteSubTest()
     }
 
     byteSub(state, action);
-    eqVetor(state, expect);
+    eqVetor(state, expect, 16);
   }
   printf("========================================\n\n\n");
 }
@@ -85,7 +85,7 @@ void testShiftRow()
     }
 
     shiftRow(state, action);
-    eqVetor(state, expect);
+    eqVetor(state, expect, 16);
   }
   printf("========================================\n\n\n");
 }
@@ -124,13 +124,13 @@ void testMixColumn()
     {
       printf("encrypt\n");
       mixColumn(encryptState, action);
-      eqVetor(encryptState, expectEncrypt);
+      eqVetor(encryptState, expectEncrypt, 16);
     }
     else
     {
       printf("decrypt\n");
       mixColumn(decryptState, action);
-      eqVetor(decryptState, expectDecrypt);
+      eqVetor(decryptState, expectDecrypt, 16);
     }
   }
   printf("========================================\n\n\n");

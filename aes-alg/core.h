@@ -24,7 +24,7 @@ extern void addRoundKey(unsigned char *state, unsigned char *key)
  * @param action 1 para substituir, -1 para substituir invertido.
  * @return void - O state é substituido diretamente.
  */
-extern void byteSub(unsigned char *state, unsigned char action)
+extern void byteSub(unsigned char *state, short action)
 {
   for (int i = 0; i < 16; i++)
   {
@@ -38,7 +38,7 @@ extern void byteSub(unsigned char *state, unsigned char action)
 typedef struct
 {
   unsigned value : COLUMNS; // 4 bits
-} index;
+} state_index;
 
 #define addValue(n, qt) n.value += qt
 
@@ -48,7 +48,7 @@ typedef struct
  * @param action 1 para embaralhar, -1 para desembaralhar.
  * @return void - O state é substituido diretamente.
  */
-extern void shiftRow(unsigned char *state, unsigned char action)
+extern void shiftRow(unsigned char *state, short action)
 {
   int line, col, repeatTime;
   unsigned char aux, oldVal;
@@ -57,7 +57,7 @@ extern void shiftRow(unsigned char *state, unsigned char action)
 
     for (repeatTime = 0; repeatTime < line; repeatTime++)
     {
-      index i = {line};
+      state_index i = {line};
 
       oldVal = state[i.value];
       for (col = 0; col <= COLUMNS; col++)
@@ -101,9 +101,9 @@ unsigned char sumWithEorL(unsigned char n1, unsigned char n2)
  * @param action 1 para embaralhar, -1 para desembaralhar.
  * @return void - O state é substituido diretamente.
  */
-extern void mixColumn(unsigned char *state, unsigned char action)
+extern void mixColumn(unsigned char *state, short action)
 {
-  unsigned char(*matrix)[4] = action == 1 ? multiplicationMatrixEncrypt : multiplicationMatrixDecrypt;
+  const unsigned char(*matrix)[4] = action == 1 ? multiplicationMatrixEncrypt : multiplicationMatrixDecrypt;
   for (int j = 0; j < 4; j++)
   {
     unsigned char aux[4];
