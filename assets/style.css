@@ -197,13 +197,14 @@ section {
 .option {
   cursor: pointer;
   color: var(--cinzaPrimario);
-  padding: 1px;
+  background-color: var(--corPrimaria);
+  padding: 10px;
   padding-left: 5px;
   transition: 0.2s all;
 }
 
 .option:hover {
-  background-color: var(--corTransparente);
+  color: var(--hoverCopy);
 }
 
 .text {
