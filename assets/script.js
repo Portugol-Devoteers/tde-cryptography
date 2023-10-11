@@ -29,3 +29,26 @@ $(document).on('click', (event) => {
         $selectIcon.css('transform', 'rotate(180deg)');
     }
 });
+
+$('.copy-icon').on('click', () => {
+    let text = $('.text').val().trim();
+    if(text!='') {
+        navigator.clipboard.writeText(text);
+        $('.copy-text').fadeIn();
+        setInterval(()=> {$('.copy-text').fadeOut()}, 2000)
+    }
+})
+
+$(".option").on('click', (event) => {
+
+    let target = $(event.target);
+    // console.log(target.text())
+    let aux = $('.select').text().trim();
+    
+    $('.select').html(`${target.text()}<i class="fas fa-chevron-down select-icon-arrow"></i>`);
+    target.text(aux);
+    
+
+    $('.options').fadeOut('fast');
+    $('.select-icon-arrow').css('transform', 'rotate(180deg)');
+})
