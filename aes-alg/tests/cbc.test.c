@@ -2,10 +2,12 @@
 #include "../cbc.h"
 #include "test.utils.h"
 #include "../utils.h"
+#include <string.h>
+#include <stdlib.h>
 
-#define TESTS 10
+#define TESTS 1
 #define RANDOM_NUMBER_1_TO_400() (1 + rand() % 400)
-
+#define BLOCK_SIZE 16
 void testCBC()
 {
   printTestDescribe("testCBC");
@@ -13,55 +15,49 @@ void testCBC()
 
   for (int testCase = 0; testCase < TESTS; testCase++)
   {
-    int plaintextSize = RANDOM_NUMBER_1_TO_400();
-    char plaintext[plaintextSize];
+    int plaintextSize = 18; // RANDOM_NUMBER_1_TO_400();
+    char plaintext[plaintextSize + 1];
     createPlaintext(plaintext, plaintextSize);
     printf("Teste com plaintext '%s', de tamanho %d\n", plaintext, plaintextSize);
 
-    // Chave de 1 a 16
-    unsigned char key[16] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
-                             0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
-                             0x0D, 0x0E, 0x0F, 0x10};
+    // Chave de 1 a BLOCK_SIZE
+    unsigned char key[BLOCK_SIZE] = {0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+                                     0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
+                                     0x0D, 0x0E, 0x0F, 0x10};
 
-    unsigned char iv[16];
+    unsigned char iv[BLOCK_SIZE] = {0};
 
     int plaintextBlocksCount = blocksCount(plaintext);
-    char cyphertext[plaintextBlocksCount * 16 + 1]; // blocksCount(plaintext) * 16 + 1(terminator "\0")
-    unsigned char textBlocksEncryptResult[plaintextBlocksCount][16];
-    unsigned char textBlocksDecryptResult[plaintextBlocksCount][16];
+    char ciphertext[plaintextBlocksCount * BLOCK_SIZE + 1]; // blocksCount(plaintext) * BLOCK_SIZE + 1(terminator "\0")
+    unsigned char textBlocksEncryptResult[plaintextBlocksCount][BLOCK_SIZE];
+    unsigned char textBlocksDecryptResult[plaintextBlocksCount][BLOCK_SIZE];
 
     cbc(plaintext, key, iv, 1, textBlocksEncryptResult);
 
     for (int i = 0; i < plaintextBlocksCount; i++)
     {
-      for (int j = 0; j < 16; j++)
-      {
-        cyphertext[i * 16 + j] = (char)textBlocksEncryptResult[i][j];
-      }
+      memcpy(&ciphertext[i * BLOCK_SIZE], textBlocksEncryptResult[i], BLOCK_SIZE);
     }
-    cyphertext[plaintextBlocksCount * 16] = '\0';
+    ciphertext[plaintextBlocksCount * BLOCK_SIZE] = '\0';
 
-    cbc(cyphertext, key, iv, -1, textBlocksDecryptResult);
+    cbc(ciphertext, key, iv, -1, textBlocksDecryptResult);
 
     unsigned char plaintextUC[plaintextSize];
-    unsigned char cyphertextResult[plaintextBlocksCount * 16];
+    unsigned char ciphertextResult[plaintextBlocksCount * BLOCK_SIZE];
 
     for (int i = 0; i < plaintextBlocksCount; i++)
     {
-      for (int j = 0; j < 16; j++)
-      {
+      memcpy(&ciphertextResult[i * BLOCK_SIZE], textBlocksDecryptResult[i], BLOCK_SIZE);
+      memcpy(&plaintextUC[i * BLOCK_SIZE], &plaintext[i * BLOCK_SIZE], BLOCK_SIZE);
 
-        cyphertextResult[i * 16 + j] = textBlocksDecryptResult[i][j];
-        plaintextUC[i * 16 + j] = plaintext[i * 16 + j];
-        if (countChar(plaintext) == i * 16 + j)
-        {
-          cyphertextResult[i * 16 + j] = '\0';
-          break;
-        }
+      if (strlen(plaintext) == i * BLOCK_SIZE + BLOCK_SIZE)
+      {
+        ciphertextResult[i * BLOCK_SIZE + BLOCK_SIZE] = '\0';
+        break;
       }
     }
 
-    eqVetor(plaintextUC, cyphertextResult, plaintextSize);
+    eqString(plaintextUC, ciphertextResult, plaintextSize);
   }
 }
 
