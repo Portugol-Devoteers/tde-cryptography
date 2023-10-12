@@ -60,5 +60,5 @@ extern void createPlaintext(char *text, int maxSize)
 
   // Copia o texto original para o ponteiro fornecido, limitando-se ao tamanho máximo
   strncpy(text, loren, maxSize);
-  text[maxSize - 1] = '\0'; // Garante que a string resultante seja terminada corretamente
+  text[maxSize + 1] = '\0'; // Garante que a string resultante seja terminada corretamente
 }

@@ -3,7 +3,7 @@
 #include "test.utils.h"
 #include "../utils.h"
 
-#define TESTS 3
+#define TESTS 10
 #define RANDOM_NUMBER_1_TO_400() (1 + rand() % 400)
 
 void testCBC()
@@ -11,7 +11,7 @@ void testCBC()
   printTestDescribe("testCBC");
   printf("Same iv and same key of encrypt must reproduce the same plaintext result, results: \n\n");
 
-  for (int i = 0; i < TESTS; i++)
+  for (int testCase = 0; testCase < TESTS; testCase++)
   {
     int plaintextSize = RANDOM_NUMBER_1_TO_400();
     char plaintext[plaintextSize];
@@ -26,7 +26,7 @@ void testCBC()
     unsigned char iv[16];
 
     int plaintextBlocksCount = blocksCount(plaintext);
-    char cyphertext[plaintextBlocksCount * 16];
+    char cyphertext[plaintextBlocksCount * 16 + 1]; // blocksCount(plaintext) * 16 + 1(terminator "\0")
     unsigned char textBlocksEncryptResult[plaintextBlocksCount][16];
     unsigned char textBlocksDecryptResult[plaintextBlocksCount][16];
 
@@ -39,6 +39,7 @@ void testCBC()
         cyphertext[i * 16 + j] = (char)textBlocksEncryptResult[i][j];
       }
     }
+    cyphertext[plaintextBlocksCount * 16] = '\0';
 
     cbc(cyphertext, key, iv, -1, textBlocksDecryptResult);
 

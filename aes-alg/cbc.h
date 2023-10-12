@@ -16,7 +16,7 @@ int countChar(char *plaintext)
 }
 extern int blocksCount(char *plaintext)
 {
-  int count = countChar(plaintext);
+  int count = strlen(plaintext);
   return ceil((double)count / 16);
 }
 
@@ -35,62 +35,54 @@ void completeBlockWithZeros(char *block)
   }
 }
 
-int cbc(char *plaintext, unsigned char *keyBytes, unsigned char *iv, short action, unsigned char (*textBlocks)[16])
+int cbc(char *text, unsigned char *keyBytes, unsigned char *iv, short action, unsigned char (*textBlocks)[16])
 {
+  int textSize = countChar(text);
+
+  // create a new block in bytes
+
+  unsigned char textInBytes[textSize];
+  for (int i = 0; i < textSize; i++)
+  {
+    textInBytes[i] = text[i];
+  }
+
+  int blocks = (int)ceil((double)textSize / 16);
+
   // Atribui o iv para o ivCopy, criando bytes aleatorios caso seja a criptografia, se nao copia o iv
-  unsigned char ivCopy[16];
+  unsigned char xorVetorAux[16];
   if (action == 1)
   {
-    RAND_bytes(ivCopy, sizeof(ivCopy));
+    RAND_bytes(iv, sizeof(iv));
+
+    // inicia o vetor auxiliar que será usado nas operaçoes de xor
+    for (int i = 0; i < 16; i++)
+    {
+      xorVetorAux[i] = iv[i];
+    }
   }
   else
   {
     for (int i = 0; i < 16; i++)
     {
-      ivCopy[i] = iv[i];
+      xorVetorAux[i] = iv[i];
     }
   }
 
-  // inicia o vetor auxiliar que será usado nas operaçoes de xor na criptografia
-  unsigned char xorVetorAux[16];
-  for (int i = 0; i < 16; i++)
+  for (int i = 0; i < blocks; i++)
   {
-    xorVetorAux[i] = ivCopy[i];
-  }
-
-  // inicia o vetor auxiliar que será usado nas operaçoes de xor na descriptografia
-  unsigned char blockCryptedAux[16];
-  for (int i = 0; i < 16; i++)
-  {
-    blockCryptedAux[i] = ivCopy[i];
-  }
-
-  for (int i = 0; i < blocksCount(plaintext); i++)
-  {
-    unsigned char block[16];
-
-    // conta quantos caracters tem no plaintext que está sendo verificado atualmente usando countChar
-    char plaintextBlock[16];
-    for (int j = 0; j < 16; j++)
-    {
-      plaintextBlock[j] = plaintext[i * 16 + j];
-    }
-    int plaintextBlockCharsCount = countChar(plaintextBlock);
-
-    for (int j = 0; j < 16; j++)
-    {
-      block[j] = plaintextBlockCharsCount > j ? plaintext[i * 16 + j] : '0';
-    }
+    int blockTextSize = (i == blocks - 1) ? (textSize - i * 16) : 16;
 
     if (action == 1)
     {
       for (int j = 0; j < 16; j++)
       {
+        unsigned char c = blockTextSize > j ? textInBytes[i * 16 + j] : '\0';
         // faz xor com o iv na primeira vez e depois com o resultado do bloco anterior
         // faz xor com a chave secreta
-        block[j] = block[j] ^ xorVetorAux[j] ^ keyBytes[j];
         // copia o resultado para o vetor auxiliar para o proximo ser usado no xor do proximo bloco
-        xorVetorAux[j] = block[j];
+        xorVetorAux[j] = c ^ xorVetorAux[j] ^ keyBytes[j];
+        textBlocks[i][j] = xorVetorAux[j];
       }
     }
     else
@@ -98,24 +90,16 @@ int cbc(char *plaintext, unsigned char *keyBytes, unsigned char *iv, short actio
       for (int j = 0; j < 16; j++)
       {
         // faz xor com a chave secreta
-        // faz xor com o iv na primeira vez e depois com o resultado do bloco anterior
-        block[j] = block[j] ^ keyBytes[j] ^ blockCryptedAux[j];
-        // copia o resultado para o vetor auxiliar para o proximo ser usado no xor do proximo bloco
-        blockCryptedAux[j] = block[j];
+        // faz xor com o iv na primeira vez e depois com o bloco criptografado anterior
+        // copia o resultado direto no vetor de blocos para evitar loop desnecessario na descriptografia
+        unsigned char charBlockAnterior = i == 0 ? iv[j] : textInBytes[(i - 1) * 16 + j];
+        unsigned char charBlockAtual = textInBytes[i * 16 + j];
+        unsigned char charKey = keyBytes[j];
+        unsigned char charXor = charBlockAtual ^ charKey ^ charBlockAnterior;
+        textBlocks[i][j] = charXor;
       }
     }
-
-    // salva o bloco no vetor de blocos
-    for (int j = 0; j < 16; j++)
-    {
-      textBlocks[i][j] = block[j];
-    }
   }
 
-  // copia o ivCopy para o iv
-  for (int i = 0; i < 16; i++)
-  {
-    iv[i] = ivCopy[i];
-  }
   return 0;
 }
