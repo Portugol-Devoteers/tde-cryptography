@@ -13,7 +13,7 @@
 </head>
 <body>
     <section>
-        <div class="content">
+        <form class="content">
             <div class="content-top">
                 <p class="copy-text hidden">Mensagem copiada!</p>
                 <i class="far fa-clone copy-icon"></i>
@@ -27,9 +27,10 @@
             </div>
             <div class="content-bottom">
                 <input class="key" maxlength="16" type="text" placeholder="Secret Key">
-                <div class="run-button">Run</div>
+                <button type="submit" class="run-button">Run</button>
             </div>
-        </div>
+            <div class="status text-danger mt-3 hidden">Os campos devem ser preenchidos corretamente</div>
+        </form>
     </section>
 </body>
 <script src="assets/script.js"></script>

@@ -1,5 +1,48 @@
-$('.open_button').on('click', () => {
-    $('header').toggleClass('headerHidden');
+$(document).ready(() => {
+    $('.select').data(
+        'action',
+        $('.select').text().trim() == 'criptografar' ? 1 : 0
+    );
+});
+
+$('form').on('submit', (e) => {
+    e.preventDefault();
+    const text = $('.text').val().trim();
+    const key = $('.key').val().trim();
+    const action = $('.select').data('action');
+
+    if (text == '' || key == '') {
+        $('.status').fadeIn();
+    } else {
+        $('.status').fadeOut();
+        $('.run-button').prop('disabled', true);
+        $('.run-button').html(`
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>                
+            `);
+        const request = $.ajax({
+            url: 'login/auth',
+            async: true,
+            type: 'POST',
+            data: `text=${text}&key=${key}&action=${action}`,
+            dataType: 'json',
+        })
+            .done((response) => {
+                if (response.code != 200) {
+                    $('.run-button').prop('disabled', false);
+                    $('.run-button').html('Run');
+                    console.log(response);
+                    alert('Ocorreu um erro!');
+                } else {
+                    $('.text').val('oioioioi');
+                }
+            })
+            .fail(function (jqXHR, textStatus) {
+                console.log('Request failed: ' + textStatus);
+                $('.run-button').prop('disabled', false);
+                $('.run-button').html('Run');
+                // alert('Ocorreu um erro!');
+            });
+    }
 });
 
 $('.select').on('click', () => {
@@ -32,23 +75,30 @@ $(document).on('click', (event) => {
 
 $('.copy-icon').on('click', () => {
     let text = $('.text').val().trim();
-    if(text!='') {
+    if (text != '') {
         navigator.clipboard.writeText(text);
         $('.copy-text').fadeIn();
-        setInterval(()=> {$('.copy-text').fadeOut()}, 2000)
+        setInterval(() => {
+            $('.copy-text').fadeOut();
+        }, 2000);
     }
-})
+});
 
-$(".option").on('click', (event) => {
-
+$('.option').on('click', (event) => {
     let target = $(event.target);
     // console.log(target.text())
     let aux = $('.select').text().trim();
-    
-    $('.select').html(`${target.text()}<i class="fas fa-chevron-down select-icon-arrow"></i>`);
+
+    $('.select').html(
+        `${target.text()}<i class="fas fa-chevron-down select-icon-arrow"></i>`
+    );
     target.text(aux);
-    
+
+    $('.select').data(
+        'action',
+        $('.select').text().trim() == 'criptografar' ? 1 : 0
+    );
 
     $('.options').fadeOut('fast');
     $('.select-icon-arrow').css('transform', 'rotate(180deg)');
-})
+});
