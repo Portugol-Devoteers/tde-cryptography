@@ -90,6 +90,9 @@ extern void shiftRow(unsigned char *state, short action)
  */
 unsigned char sumWithEorL(unsigned char n1, unsigned char n2)
 {
+  if (n1 == 0)
+    return 0;
+
   unsigned char n1L = getEorLValue(n1, lTable);
   unsigned char n2L = getEorLValue(n2, lTable);
   unsigned int lSum = n1L + n2L;
