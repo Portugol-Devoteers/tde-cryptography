@@ -1,7 +1,7 @@
 $(document).ready(() => {
     $('.select').data(
         'action',
-        $('.select').text().trim() == 'criptografar' ? 1 : 0
+        $('.select').text().trim() == 'criptografar' ? 1 : -1
     );
 });
 
@@ -20,21 +20,17 @@ $('form').on('submit', (e) => {
             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>                
             `);
         const request = $.ajax({
-            url: 'login/auth',
+            url: 'aes-alg/API.php',
             async: true,
             type: 'POST',
             data: `text=${text}&key=${key}&action=${action}`,
             dataType: 'json',
         })
             .done((response) => {
-                if (response.code != 200) {
-                    $('.run-button').prop('disabled', false);
-                    $('.run-button').html('Run');
-                    console.log(response);
-                    alert('Ocorreu um erro!');
-                } else {
-                    $('.text').val('oioioioi');
-                }
+                // console.log(response.output);
+                $('.text').val(response.output);
+                $('.run-button').prop('disabled', false);
+                $('.run-button').html('Run');
             })
             .fail(function (jqXHR, textStatus) {
                 console.log('Request failed: ' + textStatus);
@@ -96,7 +92,7 @@ $('.option').on('click', (event) => {
 
     $('.select').data(
         'action',
-        $('.select').text().trim() == 'criptografar' ? 1 : 0
+        $('.select').text().trim() == 'criptografar' ? 1 : -1
     );
 
     $('.options').fadeOut('fast');
