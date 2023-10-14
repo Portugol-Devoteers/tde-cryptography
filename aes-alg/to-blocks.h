@@ -42,8 +42,8 @@ void toVector(unsigned char (*textBlocks)[BLOCK_SIZE], char *textVector, int blo
 {
   int vectorSize = blocks * BLOCK_SIZE;
   int init = 0;
-  // if (action == 1) move salt to the first 16 bytes
   // if (action == 1)
+  // // move salt to the first 16 bytes if (action == 1)
   // {
   //   vectorSize += 16;
   //   for (int i = 0; i < 16; i++)

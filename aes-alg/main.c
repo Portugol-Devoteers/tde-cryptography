@@ -100,16 +100,18 @@ int aes(char *plaintext, short action, char *key)
   }
   // if descrypt, extract salt from plaintext
   unsigned char salt[16];
+
   // if (action == -1)
   // {
-  //   for (int i = 16; i < 32; i++)
+  //   for (int i = 0; i < 16; i++)
   //   {
-  //     salt[i - 16] = plaintext[i];
+  //     salt[i] = plaintext[i];
   //   }
   //   removeBytes(plaintext, 16);
   // }
   // // derive key
   // deriveKey(key, roundkey, keyLength, salt, action);
+
   for (int i = 0; i < 16; i++)
   {
     roundkey[i] = key[i];
@@ -118,7 +120,7 @@ int aes(char *plaintext, short action, char *key)
   int blocks = blocksCount(plaintext);
   unsigned char stateBlocks[blocks][16];
 
-  // operation mode. TODO change to CBC mode
+  // operation mode. TODO change to CBC mode, ECB
   toBlocks(plaintext, stateBlocks);
 
   for (int i = 0; i < blocks; i++)
