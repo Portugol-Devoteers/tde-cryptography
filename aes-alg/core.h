@@ -13,7 +13,9 @@ extern void addRoundKey(unsigned char *state, unsigned char *key)
 {
   for (int i = 0; i < 16; i++)
   {
-    state[i] ^= key[i];
+    unsigned char aux = state[i];
+    unsigned char aux2 = key[i]; // TODO undo this, used only for debug
+    state[i] = aux ^ aux2;
   }
 }
 
@@ -30,7 +32,8 @@ extern void byteSub(unsigned char *state, short action)
   {
     int x, y;
     extractXY(state[i], &x, &y);
-    state[i] = action == 1 ? sBox[x][y] : invSBox[x][y];
+    unsigned char aux = action == 1 ? sBox[x][y] : invSBox[x][y]; // TODO undo this, used only for debug
+    state[i] = aux;
   }
 }
 
@@ -121,7 +124,8 @@ extern void mixColumn(unsigned char *state, short action)
       unsigned char colsXor = 0;
       for (int k = 0; k < 4; k++)
       {
-        colsXor ^= sumWithEorL(aux[k], matrix[i][k]);
+        unsigned char r = sumWithEorL(aux[k], matrix[i][k]); // TODO undo this, used only for debug
+        colsXor ^= r;
       }
 
       state[stateIndex] = colsXor;

@@ -26,36 +26,66 @@ void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, sh
 {
   short rounds = getRounds(keyLength);
   int i;
+  unsigned char localState[16];
 
-  addRoundKey(state, roundkey);
+  for (i = 0; i < 16; i++)
+  {
+    localState[i] = state[i];
+  }
+
   if (action == 1)
   {
+    addRoundKey(localState, roundkey);
     for (i = 0; i < rounds; i++)
     {
-      byteSub(state, action);
-      shiftRow(state, action);
+      byteSub(localState, action);
+      shiftRow(localState, action);
       if (i < rounds - 1)
       {
-        mixColumn(state, action);
+        mixColumn(localState, action);
       }
       expandeKey(roundkey, i + 1);
-      addRoundKey(state, roundkey);
+      addRoundKey(localState, roundkey);
     }
   }
   else
   {
-    for (i = 0; i < rounds; i++)
-    {
-      shiftRow(state, action);
-      byteSub(state, action);
-      expandeKey(roundkey, i + 1);
-      addRoundKey(state, roundkey);
+    unsigned char roundkeyRound[rounds + 1][16];
 
-      if (i < rounds - 1)
+    // Save round 0 key
+    for (i = 0; i < 16; i++)
+    {
+      roundkeyRound[0][i] = roundkey[i];
+    }
+
+    // get all keys
+    for (i = 1; i <= rounds; i++)
+    {
+      expandeKey(roundkey, i);
+      for (int j = 0; j < 16; j++)
       {
-        mixColumn(state, action);
+        roundkeyRound[i][j] = roundkey[j];
       }
     }
+
+    addRoundKey(localState, roundkeyRound[rounds]);
+
+    for (i = rounds - 1; i >= 0; i--)
+    {
+      shiftRow(localState, action);
+      byteSub(localState, action);
+      addRoundKey(localState, roundkeyRound[i]);
+
+      if (i > 0)
+      {
+        mixColumn(localState, action);
+      }
+    }
+  }
+
+  for (i = 0; i < 16; i++)
+  {
+    state[i] = localState[i];
   }
 }
 
@@ -68,19 +98,22 @@ int aes(char *plaintext, short action, char *key)
   {
     return -1;
   }
-
   // if descrypt, extract salt from plaintext
   unsigned char salt[16];
-  if (action == -1)
+  // if (action == -1)
+  // {
+  //   for (int i = 16; i < 32; i++)
+  //   {
+  //     salt[i - 16] = plaintext[i];
+  //   }
+  //   removeBytes(plaintext, 16);
+  // }
+  // // derive key
+  // deriveKey(key, roundkey, keyLength, salt, action);
+  for (int i = 0; i < 16; i++)
   {
-    for (int i = 16; i < 32; i++)
-    {
-      salt[i - 16] = plaintext[i];
-    }
-    removeBytes(plaintext, 16);
+    roundkey[i] = key[i];
   }
-  // derive key
-  deriveKey(key, roundkey, keyLength, salt, action);
 
   int blocks = blocksCount(plaintext);
   unsigned char stateBlocks[blocks][16];
@@ -97,8 +130,34 @@ int aes(char *plaintext, short action, char *key)
   toVector(stateBlocks, plaintext, blocks, salt, action);
   return 0;
 }
+
 int main()
 {
-  aes("texto", 1, "123456789012345678");
+  char texto[17] = "ABCDEFGH";
+  char key[] = "1234567890123456";
+  // print input in bytes
+  for (int i = 0; i < 16; i++)
+  {
+    printf("%02X ", (unsigned char)texto[i]);
+  }
+  printf("\n");
+  aes(texto, 1, key);
+
+  // print bytes with a space between
+  for (int i = 0; i < 16; i++)
+  {
+    printf("%02X ", (unsigned char)texto[i]);
+  }
+  printf("\n");
+
+  aes(texto, -1, key);
+
+  // print bytes with a space between
+  for (int i = 0; i < 16; i++)
+  {
+    printf("%02X ", (unsigned char)texto[i]);
+  }
+  printf("\n");
+
   return 0;
 }

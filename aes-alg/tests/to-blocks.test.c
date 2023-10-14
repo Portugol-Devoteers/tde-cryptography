@@ -15,7 +15,7 @@ void testToBlocks()
     char plaintext[plaintextSize + 1];
 
     createPlaintext(plaintext, plaintextSize);
-    printf("Teste com plaintext de tamanho %d\n", plaintext, plaintextSize);
+    printf("Teste com plaintext de tamanho %d\n", plaintextSize);
 
     int plaintextBlocksCount = blocksCount(plaintext);
     unsigned char textBlocks[plaintextBlocksCount][BLOCK_SIZE];
@@ -31,7 +31,7 @@ void testToBlocks()
         // complete plaintext bytes with \0 for comparation
         int blockTextSize = (i == plaintextBlocksCount - 1) ? (plaintextSize - i * BLOCK_SIZE) : BLOCK_SIZE;
 
-        expectBytes[i * BLOCK_SIZE + j] = (j <= blockTextSize) ? plaintext[i * BLOCK_SIZE + j] : ' ';
+        expectBytes[i * BLOCK_SIZE + j] = (j <= blockTextSize) ? plaintext[i * BLOCK_SIZE + j] : '\0';
       }
     }
 
