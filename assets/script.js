@@ -1,3 +1,4 @@
+// set data-action = 1
 $(document).ready(() => {
     $('.select').data(
         'action',
@@ -5,6 +6,7 @@ $(document).ready(() => {
     );
 });
 
+// verification and request
 $('form').on('submit', (e) => {
     e.preventDefault();
     const text = $('.text').val().trim();
@@ -27,8 +29,7 @@ $('form').on('submit', (e) => {
             dataType: 'json',
         })
             .done((response) => {
-                // console.log(response.output);
-                $('.text').val(response.output);
+                $('.text').val(atob(response.output));
                 $('.run-button').prop('disabled', false);
                 $('.run-button').html('Run');
             })
@@ -36,11 +37,12 @@ $('form').on('submit', (e) => {
                 console.log('Request failed: ' + textStatus);
                 $('.run-button').prop('disabled', false);
                 $('.run-button').html('Run');
-                // alert('Ocorreu um erro!');
+                alert('Ocorreu um erro!');
             });
     }
 });
 
+// open select
 $('.select').on('click', () => {
     let $options = $('.options');
     let $selectIcon = $('.select-icon-arrow');
@@ -54,6 +56,7 @@ $('.select').on('click', () => {
     }
 });
 
+// close select
 $(document).on('click', (event) => {
     let $options = $('.options');
     let $selectIcon = $('.select-icon-arrow');
@@ -69,6 +72,7 @@ $(document).on('click', (event) => {
     }
 });
 
+// copy button
 $('.copy-icon').on('click', () => {
     let text = $('.text').val().trim();
     if (text != '') {
@@ -80,9 +84,9 @@ $('.copy-icon').on('click', () => {
     }
 });
 
+// change select to option
 $('.option').on('click', (event) => {
     let target = $(event.target);
-    // console.log(target.text())
     let aux = $('.select').text().trim();
 
     $('.select').html(
