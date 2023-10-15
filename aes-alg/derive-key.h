@@ -5,7 +5,7 @@
 #include <openssl/evp.h>
 #include "utils.h"
 
-extern int deriveKey(char *key, unsigned char *derivedKey, unsigned char keyLength, unsigned char *salt, short action)
+extern int deriveKey(char *key, unsigned char *derivedKey, short *keyLength, unsigned char **salt, short action)
 {
     unsigned char saltCopy[16];
     if (action == 1)
@@ -16,25 +16,26 @@ extern int deriveKey(char *key, unsigned char *derivedKey, unsigned char keyLeng
     {
         for (int i = 0; i < 16; i++)
         {
-            saltCopy[i] = salt[i];
+            saltCopy[i] = (*salt)[i];
         }
     }
 
     int iterations = 10000;
-    unsigned char keySize = nearestKeySize(keyLength);
+    short keySizeOutput = nearestKeySize((*keyLength));
 
     // Inicializar OpenSSL
     OpenSSL_add_all_algorithms();
 
     // Derivação da chave
-    PKCS5_PBKDF2_HMAC(key, keyLength, saltCopy, sizeof(saltCopy), iterations, EVP_sha256(), (int)keySize, derivedKey);
+    PKCS5_PBKDF2_HMAC(key, (*keyLength), saltCopy, sizeof(saltCopy), iterations, EVP_sha256(), (int)keySizeOutput, derivedKey);
 
     // copia o saltCopy para o salt
     for (int i = 0; i < 16; i++)
     {
-        salt[i] = saltCopy[i];
+        (*salt)[i] = saltCopy[i];
     }
 
+    (*keyLength) = keySizeOutput;
     // Limpar OpenSSL
     EVP_cleanup();
 

@@ -51,6 +51,7 @@ extern void eqVetor(unsigned char *receive, unsigned char *expect, short vetorSi
       return;
     }
   }
+  // printReceiveExpect(receive, expect, vetorSize);
   printTestResult(1);
 }
 
@@ -73,11 +74,14 @@ extern void eqString(unsigned char *receive, unsigned char *expect, short string
       return;
     }
   }
+  printf("receive: %s\n\n", receive);
+  printf("expected: %s\n\n", expect);
+  printTestResult(1);
 }
 
 extern void createPlaintext(char *text, int maxSize)
 {
-  char loren[] = "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of \"de Finibus Bonorum et Malorum\" (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during the Renaissance. The first line of Lorem Ipsum, \"Lorem ipsum dolor sit amet..\", comes from a line in section 1.10.32.";
+  char loren[] = "_YF20wocnOJZ1$ }{LiN_kFJmPraL_M>w;>;$?94^b=8Bn0}a4Ml.n8vEJ_[<8kF^10hm-W&i$}2H{\"\'\"%|Vk!My/FaqH/q\"5yC%L[$=WI\"g>zk/2f_YeH~/Bxv<j<EqHEUf=iT(6{nX:>FvX0 fZU!VN:km&eyPxjK&[$ThJZ3Uq7(pAN/x|*NE\'gbWDv43(gKTS-^Pdb9;2UICd^;*>U$}*/5vU$RNXZWpZ:Q!1=;@SzhieEdbo1x=xFvS6>q1/Jg>iYBEZ?,F 9%~qh?wg!a7K#c/x9f>N_{|#T#, jU%+]0\'GPXWDt,\\uiZU.m=2d+a\"|0T;Hb|mr1`{xXnXOYA:XVSd/(6j5y$Y8k> =z ,r;?eEkWz_tqBuu?@{T90=43Q\\hFo(arByVq!eK^3?mBQ>hf-DXy2LMSQMWuZ^ue~^-=t6T$m3FrWDC!-NJ=6.#2\'D0Zw/M8Y`</c9\'2bJ>[sj)oseOXw/Y*&UD2Z.\'(_uRf?(xdH";
 
   int textLength = strlen(loren);
   int copied = 0; // Rastreia o número de caracteres copiados

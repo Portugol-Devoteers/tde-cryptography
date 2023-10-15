@@ -21,7 +21,7 @@ void testToBlocks()
     unsigned char textBlocks[plaintextBlocksCount][BLOCK_SIZE];
     unsigned char receiveBytes[plaintextBlocksCount * 16];
     unsigned char expectBytes[plaintextBlocksCount * 16];
-    toBlocks(plaintext, textBlocks);
+    ecb(plaintext, textBlocks);
 
     for (int i = 0; i < plaintextBlocksCount; i++)
     {

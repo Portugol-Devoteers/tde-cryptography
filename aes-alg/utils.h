@@ -105,6 +105,20 @@ const unsigned char lTable[16][16] = {
     {0x44, 0x11, 0x92, 0xD9, 0x23, 0x20, 0x2E, 0x89, 0xB4, 0x7C, 0xB8, 0x26, 0x77, 0x99, 0xE3, 0xA5},
     {0x67, 0x4A, 0xED, 0xDE, 0xC5, 0x31, 0xFE, 0x18, 0x0D, 0x63, 0x8C, 0x80, 0xC0, 0xF7, 0x70, 0x07}};
 
+// Função para realocar memória com um ponteiro para ponteiro
+void reallocMemory(unsigned char **vector, uint32_t newVectorSize)
+{
+    unsigned char *newVector = (unsigned char *)realloc(*vector, newVectorSize * sizeof(unsigned char));
+    if (newVector != NULL)
+    {
+        *vector = newVector; // Atualiza o ponteiro original
+    }
+    else
+    {
+        printf("Algo deu errado ao realocar a memória.\n");
+    }
+}
+
 unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16])
 {
     int x, y;
@@ -113,14 +127,16 @@ unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16])
     return table[x][y];
 }
 
-void removeBytes(char *plaintext, int bytesToRemove)
+void removeBytes(unsigned char **text, uint32_t textSize, short bytesToRemove)
 {
-    // Move os bytes restantes para a esquerda
-    memmove(plaintext, plaintext + bytesToRemove, strlen(plaintext) - bytesToRemove + 1);
+    u_int32_t vectorSize = textSize + bytesToRemove;
+    // Inicie a partir da posição onde os bytes devem ser removidos
+    size_t copySize = vectorSize - bytesToRemove; // Tamanho do trecho a ser copiado
 
-    // Atualiza o tamanho do plaintext
-    int newLength = strlen(plaintext) - bytesToRemove;
-    plaintext[newLength] = '\0';
+    // Usando memcpy para copiar o trecho de text
+    memcpy(*text, *text + bytesToRemove, copySize);
+    // realloc
+    reallocMemory(text, vectorSize - bytesToRemove);
 }
 
 short getKeyLength(const char *key)
@@ -149,4 +165,25 @@ extern unsigned char nearestKeySize(unsigned char x)
         return 32;
     }
 }
+
+// Função para converter bytes em uint32_t
+uint32_t bytesToUInt(const unsigned char byteArray[4])
+{
+    uint32_t value = 0;
+    value |= ((uint32_t)byteArray[0] << 24);
+    value |= ((uint32_t)byteArray[1] << 16);
+    value |= ((uint32_t)byteArray[2] << 8);
+    value |= byteArray[3];
+    return value;
+}
+
+// Função para converter uint32_t em bytes
+void uintToBytes(uint32_t value, unsigned char byteArray[4])
+{
+    byteArray[0] = (value >> 24) & 0xFF;
+    byteArray[1] = (value >> 16) & 0xFF;
+    byteArray[2] = (value >> 8) & 0xFF;
+    byteArray[3] = value & 0xFF;
+}
+
 #endif
