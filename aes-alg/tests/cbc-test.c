@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "../cbc.h"
-#include "test.utils.h"
+#include "test-utils.h"
 #include "../utils.h"
 #include <string.h>
 #include <stdlib.h>

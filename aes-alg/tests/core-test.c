@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "../core.h"
-#include "test.utils.h"
+#include "test-utils.h"
 
 void addRoundKeyTest()
 {

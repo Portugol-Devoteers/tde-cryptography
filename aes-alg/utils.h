@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 // Enumeração para o tipo de operação (criptografar ou descriptografar)
 enum OperationType
@@ -109,14 +111,7 @@ const unsigned char lTable[16][16] = {
  * @param y O valor de y a ser retornado.
  * @return void - Os valores de x e y são retornados por referência.
  */
-void extractXY(unsigned char hex, int *x, int *y)
-{
-    // Extrai o primeiro dígito (4 bits mais significativos) como x
-    *x = (hex >> 4) & 0xF;
-
-    // Extrai o segundo dígito (4 bits menos significativos) como y
-    *y = hex & 0xF;
-}
+void extractXY(unsigned char hex, int *x, int *y);
 
 /**
  * @brief Realoca a memória de um vetor com um ponteiro para ponteiro.
@@ -129,18 +124,7 @@ void extractXY(unsigned char hex, int *x, int *y)
  * @param[in,out] vector O ponteiro para ponteiro que representa o vetor a ser realocado.
  * @param[in] newVectorSize O novo tamanho desejado para o vetor.
  */
-void reallocMemory(unsigned char **vector, uint32_t newVectorSize)
-{
-    unsigned char *newVector = (unsigned char *)realloc(*vector, newVectorSize * sizeof(unsigned char));
-    if (newVector != NULL)
-    {
-        *vector = newVector; // Atualiza o ponteiro original
-    }
-    else
-    {
-        printf("Algo deu errado ao realocar a memória.\n");
-    }
-}
+void reallocMemory(unsigned char **vector, uint32_t newVectorSize);
 
 /**
  * @brief Obtém um valor da tabela E ou L com base no valor fornecido.
@@ -152,13 +136,7 @@ void reallocMemory(unsigned char **vector, uint32_t newVectorSize)
  * @param[in] table A tabela a ser usada (E ou L).
  * @return O valor correspondente da tabela.
  */
-unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16])
-{
-    int x, y;
-    extractXY(n, &x, &y);
-
-    return table[x][y];
-}
+unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16]);
 
 /**
  * @brief Remove bytes de um vetor de dados.
@@ -170,17 +148,7 @@ unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16])
  * @param[in] dataSize O tamanho atual do vetor de dados.
  * @param[in] bytesToRemove O número de bytes a serem removidos.
  */
-void removeBytes(unsigned char **data, uint32_t dataSize, short bytesToRemove)
-{
-    u_int32_t vectorSize = dataSize + bytesToRemove;
-    // Inicie a partir da posição onde os bytes devem ser removidos
-    size_t copySize = vectorSize - bytesToRemove; // Tamanho do trecho a ser copiado
-
-    // Usando memcpy para copiar o trecho de data
-    memcpy(*data, *data + bytesToRemove, copySize);
-    // realloc
-    reallocMemory(data, vectorSize - bytesToRemove);
-}
+void removeBytes(unsigned char **data, uint32_t dataSize, short bytesToRemove);
 
 /**
  * @brief Obtém o tamanho da chave a partir de uma string de chave.
@@ -190,16 +158,7 @@ void removeBytes(unsigned char **data, uint32_t dataSize, short bytesToRemove)
  * @param[in] key A string de chave.
  * @return O tamanho da chave.
  */
-short getKeyLength(const char *key)
-{
-    if (key == NULL)
-    {
-        printf("Erro ao obter o tamanho da chave.\n");
-        return -1;
-    }
-
-    return (short)strlen(key);
-}
+short getKeyLength(const char *key);
 
 /**
  * @brief Obtém o tamanho mais próximo para a chave com base em um valor x.
@@ -209,21 +168,7 @@ short getKeyLength(const char *key)
  * @param[in] x O valor usado para determinar o tamanho da chave.
  * @return O tamanho de chave mais próximo.
  */
-unsigned char getNearestKeySize(unsigned char x)
-{
-    if (x <= 16)
-    {
-        return 16;
-    }
-    else if (x <= 24)
-    {
-        return 24;
-    }
-    else
-    {
-        return 32;
-    }
-}
+unsigned char getNearestKeySize(unsigned char x);
 
 /**
  * @brief Converte um array de bytes em um valor uint32_t.
@@ -233,15 +178,7 @@ unsigned char getNearestKeySize(unsigned char x)
  * @param[in] byteArray O array de bytes a ser convertido.
  * @return O valor uint32_t resultante.
  */
-uint32_t bytesToUInt(const unsigned char byteArray[4])
-{
-    uint32_t value = 0;
-    value |= ((uint32_t)byteArray[0] << 24);
-    value |= ((uint32_t)byteArray[1] << 16);
-    value |= ((uint32_t)byteArray[2] << 8);
-    value |= byteArray[3];
-    return value;
-}
+uint32_t bytesToUInt(const unsigned char byteArray[4]);
 
 /**
  * @brief Converte um valor uint32_t em um array de bytes.
@@ -251,13 +188,7 @@ uint32_t bytesToUInt(const unsigned char byteArray[4])
  * @param[in] value O valor uint32_t a ser convertido.
  * @param[out] byteArray O array de bytes resultante.
  */
-void uintToBytes(uint32_t value, unsigned char byteArray[4])
-{
-    byteArray[0] = (value >> 24) & 0xFF;
-    byteArray[1] = (value >> 16) & 0xFF;
-    byteArray[2] = (value >> 8) & 0xFF;
-    byteArray[3] = value & 0xFF;
-}
+void uintToBytes(uint32_t value, unsigned char byteArray[4]);
 
 /**
  * @brief Obtém o número de rodadas com base no tamanho da chave.
@@ -267,19 +198,6 @@ void uintToBytes(uint32_t value, unsigned char byteArray[4])
  * @param[in] keyLength O tamanho da chave.
  * @return O número de rodadas.
  */
-short getRoundsCount(short keyLength)
-{
-    switch (keyLength)
-    {
-    case 16:
-        return 10;
-    case 24:
-        return 12;
-    case 32:
-        return 14;
-    default:
-        return -1;
-    }
-}
+short getRoundsCount(short keyLength);
 
-#endif
+#endif // UTILS_H

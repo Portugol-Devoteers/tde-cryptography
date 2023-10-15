@@ -61,6 +61,18 @@
         "-lcrypto"
       ],
       "group": "build"
+    },
+    {
+      "label": "Build Project - Compile all files",
+      "type": "shell",
+      "command": "make", // Este é o comando para chamar o Makefile
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "silent"
+      }
     }
   ]
 }

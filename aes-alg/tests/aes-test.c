@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "../aes.h"
-#include "test.utils.h"
+#include "test-utils.h"
 #include "../utils.h"
 
 #define MAX_TEXT_SIZE 100000
