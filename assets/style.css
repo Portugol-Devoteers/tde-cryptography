@@ -1,10 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,200&family=Poppins:wght@300&display=swap');
-/* SIDE BAR CSS */
 
 :root {
     --corPrimaria: #171717;
     --corTransparente: #22212140;
-    --dropShadow: #08080810;
+    --dropShadow: #8a818110;
     --corBotao: #111111;
     --bordaBotao: #19181840;
     --corFundo: #0f0f0f;
