@@ -1,0 +1,42 @@
+Teste testAES
+========================================
+Teste com plaintext de tamanho 6808
+
+Teste passou
+
+Teste com plaintext de tamanho 74
+
+Teste passou
+
+Teste com plaintext de tamanho 8931
+
+Teste passou
+
+Teste com plaintext de tamanho 7545
+
+Teste passou
+
+Teste com plaintext de tamanho 7924
+
+Teste passou
+
+Teste com plaintext de tamanho 4441
+
+Teste passou
+
+Teste com plaintext de tamanho 4493
+
+Teste passou
+
+Teste com plaintext de tamanho 7988
+
+Teste passou
+
+Teste com plaintext de tamanho 2328
+
+Teste passou
+
+Teste com plaintext de tamanho 8841
+
+Teste passou
+

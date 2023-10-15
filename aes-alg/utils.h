@@ -4,6 +4,14 @@
 #include <stdio.h>
 #include <string.h>
 
+// Enumeração para o tipo de operação (criptografar ou descriptografar)
+enum OperationType
+{
+    Encrypt = 1,
+    Decrypt = -1
+};
+
+// Tabela de substituição (S-Box) usada na criptografia AES
 const unsigned char sBox[16][16] = {
     {0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76},
     {0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0},
@@ -22,6 +30,7 @@ const unsigned char sBox[16][16] = {
     {0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF},
     {0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16}};
 
+// Tabela de substituição inversa (S-Box inversa) usada na descriptografia AES
 const unsigned char invSBox[16][16] = {
     {0x52, 0x09, 0x6A, 0xD5, 0x30, 0x36, 0xA5, 0x38, 0xBF, 0x40, 0xA3, 0x9E, 0x81, 0xF3, 0xD7, 0xFB},
     {0x7C, 0xE3, 0x39, 0x82, 0x9B, 0x2F, 0xFF, 0x87, 0x34, 0x8E, 0x43, 0x44, 0xC4, 0xDE, 0xE9, 0xCB},
@@ -41,34 +50,21 @@ const unsigned char invSBox[16][16] = {
     {0x17, 0x2B, 0x04, 0x7E, 0xBA, 0x77, 0xD6, 0x26, 0xE1, 0x69, 0x14, 0x63, 0x55, 0x21, 0x0C, 0x7D}};
 ;
 
-/**
- * Função que extrai os valores de x (primeiro) e y (segundo) de um número hexadecimal.
- * @param hex O número hexadecimal a ser extraído.
- * @param x O valor de x a ser retornado.
- * @param y O valor de y a ser retornado.
- * @return void - Os valores de x e y são retornados por referência.
- */
-void extractXY(unsigned char hex, int *x, int *y)
-{
-    // Extrai o primeiro dígito (4 bits mais significativos) como x
-    *x = (hex >> 4) & 0xF;
-
-    // Extrai o segundo dígito (4 bits menos significativos) como y
-    *y = hex & 0xF;
-}
-
+// Matriz de multiplicação usada na etapa de MixColumns para criptografia
 const unsigned char multiplicationMatrixEncrypt[4][4] = {
     {0x02, 0x03, 0x01, 0x01},
     {0x01, 0x02, 0x03, 0x01},
     {0x01, 0x01, 0x02, 0x03},
     {0x03, 0x01, 0x01, 0x02}};
 
+// Matriz de multiplicação usada na etapa de MixColumns para descriptografia
 const unsigned char multiplicationMatrixDecrypt[4][4] = {
     {0x0E, 0x0B, 0x0D, 0x09},
     {0x09, 0x0E, 0x0B, 0x0D},
     {0x0D, 0x09, 0x0E, 0x0B},
     {0x0B, 0x0D, 0x09, 0x0E}};
 
+// Tabela de substituição usada na etapa de MixColumns para criptografia
 const unsigned char eTable[16][16] = {
     {0x01, 0x03, 0x05, 0x0F, 0x11, 0x33, 0x55, 0xFF, 0x1A, 0x2E, 0x72, 0x96, 0xA1, 0xF8, 0x13, 0x35},
     {0x5F, 0xE1, 0x38, 0x48, 0xD8, 0x73, 0x95, 0xA4, 0xF7, 0x02, 0x06, 0x0A, 0x1E, 0x22, 0x66, 0xAA},
@@ -87,6 +83,7 @@ const unsigned char eTable[16][16] = {
     {0x12, 0x36, 0x5A, 0xEE, 0x29, 0x7B, 0x8D, 0x8C, 0x8F, 0x8A, 0x85, 0x94, 0xA7, 0xF2, 0x0D, 0x17},
     {0x39, 0x4B, 0xDD, 0x7C, 0x84, 0x97, 0xA2, 0xFD, 0x1C, 0x24, 0x6C, 0xB4, 0xC7, 0x52, 0xF6, 0x01}};
 
+// Tabela de substituição usada na etapa de MixColumns para descriptografia
 const unsigned char lTable[16][16] = {
     {0x00, 0x00, 0x19, 0x01, 0x32, 0x02, 0x1A, 0xC6, 0x4B, 0xC7, 0x1B, 0x68, 0x33, 0xEE, 0xDF, 0x03},
     {0x64, 0x04, 0xE0, 0x0E, 0x34, 0x8D, 0x81, 0xEF, 0x4C, 0x71, 0x08, 0xC8, 0xF8, 0x69, 0x1C, 0xC1},
@@ -105,7 +102,33 @@ const unsigned char lTable[16][16] = {
     {0x44, 0x11, 0x92, 0xD9, 0x23, 0x20, 0x2E, 0x89, 0xB4, 0x7C, 0xB8, 0x26, 0x77, 0x99, 0xE3, 0xA5},
     {0x67, 0x4A, 0xED, 0xDE, 0xC5, 0x31, 0xFE, 0x18, 0x0D, 0x63, 0x8C, 0x80, 0xC0, 0xF7, 0x70, 0x07}};
 
-// Função para realocar memória com um ponteiro para ponteiro
+/**
+ * @brief Função que extrai os valores de x (primeiros 4 bits a esquerda) e y (ultimos 4 bits) de um número hexadecimal.
+ * @param hex O número hexadecimal a ser extraído.
+ * @param x O valor de x a ser retornado.
+ * @param y O valor de y a ser retornado.
+ * @return void - Os valores de x e y são retornados por referência.
+ */
+void extractXY(unsigned char hex, int *x, int *y)
+{
+    // Extrai o primeiro dígito (4 bits mais significativos) como x
+    *x = (hex >> 4) & 0xF;
+
+    // Extrai o segundo dígito (4 bits menos significativos) como y
+    *y = hex & 0xF;
+}
+
+/**
+ * @brief Realoca a memória de um vetor com um ponteiro para ponteiro.
+ *
+ * Esta função realoca a memória do vetor representado por um ponteiro para ponteiro
+ * para o novo tamanho especificado. Se a realocação for bem-sucedida, o ponteiro
+ * original é atualizado para apontar para a nova memória alocada. Caso contrário,
+ * uma mensagem de erro é exibida.
+ *
+ * @param[in,out] vector O ponteiro para ponteiro que representa o vetor a ser realocado.
+ * @param[in] newVectorSize O novo tamanho desejado para o vetor.
+ */
 void reallocMemory(unsigned char **vector, uint32_t newVectorSize)
 {
     unsigned char *newVector = (unsigned char *)realloc(*vector, newVectorSize * sizeof(unsigned char));
@@ -119,6 +142,16 @@ void reallocMemory(unsigned char **vector, uint32_t newVectorSize)
     }
 }
 
+/**
+ * @brief Obtém um valor da tabela E ou L com base no valor fornecido.
+ *
+ * Esta função obtém um valor da tabela E ou L com base em um valor de entrada `n`.
+ * A tabela usada é especificada pelo parâmetro `table`.
+ *
+ * @param[in] n O valor de entrada.
+ * @param[in] table A tabela a ser usada (E ou L).
+ * @return O valor correspondente da tabela.
+ */
 unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16])
 {
     int x, y;
@@ -127,18 +160,36 @@ unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16])
     return table[x][y];
 }
 
-void removeBytes(unsigned char **text, uint32_t textSize, short bytesToRemove)
+/**
+ * @brief Remove bytes de um vetor de dados.
+ *
+ * Esta função remove um número especificado de bytes de um vetor de dados.
+ * Os bytes a serem removidos são especificados pelo parâmetro `bytesToRemove`.
+ *
+ * @param[in,out] data O ponteiro para o vetor de dados.
+ * @param[in] dataSize O tamanho atual do vetor de dados.
+ * @param[in] bytesToRemove O número de bytes a serem removidos.
+ */
+void removeBytes(unsigned char **data, uint32_t dataSize, short bytesToRemove)
 {
-    u_int32_t vectorSize = textSize + bytesToRemove;
+    u_int32_t vectorSize = dataSize + bytesToRemove;
     // Inicie a partir da posição onde os bytes devem ser removidos
     size_t copySize = vectorSize - bytesToRemove; // Tamanho do trecho a ser copiado
 
-    // Usando memcpy para copiar o trecho de text
-    memcpy(*text, *text + bytesToRemove, copySize);
+    // Usando memcpy para copiar o trecho de data
+    memcpy(*data, *data + bytesToRemove, copySize);
     // realloc
-    reallocMemory(text, vectorSize - bytesToRemove);
+    reallocMemory(data, vectorSize - bytesToRemove);
 }
 
+/**
+ * @brief Obtém o tamanho da chave a partir de uma string de chave.
+ *
+ * Esta função calcula o tamanho da chave com base na string de chave fornecida.
+ *
+ * @param[in] key A string de chave.
+ * @return O tamanho da chave.
+ */
 short getKeyLength(const char *key)
 {
     if (key == NULL)
@@ -150,7 +201,15 @@ short getKeyLength(const char *key)
     return (short)strlen(key);
 }
 
-extern unsigned char nearestKeySize(unsigned char x)
+/**
+ * @brief Obtém o tamanho mais próximo para a chave com base em um valor x.
+ *
+ * Esta função retorna o tamanho de chave mais próximo com base em um valor x fornecido.
+ *
+ * @param[in] x O valor usado para determinar o tamanho da chave.
+ * @return O tamanho de chave mais próximo.
+ */
+unsigned char getNearestKeySize(unsigned char x)
 {
     if (x <= 16)
     {
@@ -166,7 +225,14 @@ extern unsigned char nearestKeySize(unsigned char x)
     }
 }
 
-// Função para converter bytes em uint32_t
+/**
+ * @brief Converte um array de bytes em um valor uint32_t.
+ *
+ * Esta função converte um array de 4 bytes em um valor uint32_t.
+ *
+ * @param[in] byteArray O array de bytes a ser convertido.
+ * @return O valor uint32_t resultante.
+ */
 uint32_t bytesToUInt(const unsigned char byteArray[4])
 {
     uint32_t value = 0;
@@ -177,13 +243,43 @@ uint32_t bytesToUInt(const unsigned char byteArray[4])
     return value;
 }
 
-// Função para converter uint32_t em bytes
+/**
+ * @brief Converte um valor uint32_t em um array de bytes.
+ *
+ * Esta função converte um valor uint32_t em um array de 4 bytes.
+ *
+ * @param[in] value O valor uint32_t a ser convertido.
+ * @param[out] byteArray O array de bytes resultante.
+ */
 void uintToBytes(uint32_t value, unsigned char byteArray[4])
 {
     byteArray[0] = (value >> 24) & 0xFF;
     byteArray[1] = (value >> 16) & 0xFF;
     byteArray[2] = (value >> 8) & 0xFF;
     byteArray[3] = value & 0xFF;
+}
+
+/**
+ * @brief Obtém o número de rodadas com base no tamanho da chave.
+ *
+ * Esta função determina o número de rodadas com base no tamanho da chave.
+ *
+ * @param[in] keyLength O tamanho da chave.
+ * @return O número de rodadas.
+ */
+short getRoundsCount(short keyLength)
+{
+    switch (keyLength)
+    {
+    case 16:
+        return 10;
+    case 24:
+        return 12;
+    case 32:
+        return 14;
+    default:
+        return -1;
+    }
 }
 
 #endif

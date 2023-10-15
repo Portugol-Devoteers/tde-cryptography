@@ -5,111 +5,150 @@
 
 #define BLOCK_SIZE 16
 #define SALT_SIZE 16
-#define TEXT_SIZE_BYTES 4
+#define DATA_SIZE_BYTES 4
 
-extern int blocksCount(uint32_t textSize)
+/**
+ * @brief Calcula o número de blocos de dados necessários para armazenar a quantidade de dados especificada, considerando uma operação de criptografia.
+ *
+ * Esta função calcula o número de blocos de dados necessários para acomodar a quantidade de dados especificada, levando em consideração uma operação de criptografia.
+ *
+ * @param[in] dataSize Tamanho dos dados a serem armazenados.
+ * @param[in] operationType O tipo de operação (Encrypt ou Decrypt).
+ * @return O número de blocos de dados necessários.
+ */
+int getBlockCount(uint32_t dataSize, enum OperationType operationType)
 {
-  return (int)ceil((double)textSize / BLOCK_SIZE);
-}
+  // Calcula o número de blocos arredondando para cima usando ceil
+  int blocks = (int)ceil((double)dataSize / BLOCK_SIZE);
 
-int getTextSize(unsigned char *textInBytes)
-{
-  // extract textInBytes size from the first TEXT_SIZE_BYTES (4) bytes
-  unsigned char textSizeBytes[TEXT_SIZE_BYTES];
-
-  for (int i = 0; i < TEXT_SIZE_BYTES; i++)
-  {
-    textSizeBytes[i] = textInBytes[i];
-  }
-
-  return bytesToUInt(textSizeBytes);
-}
-
-int ecb(unsigned char **textInBytes, unsigned char (*textBlocks)[BLOCK_SIZE], unsigned char **deriveKeySalt, uint32_t textSize, short action)
-{
-  short bytesToRemove = TEXT_SIZE_BYTES;
-
-  if (action == -1)
-  {
-    memcpy((*deriveKeySalt), (*textInBytes) + TEXT_SIZE_BYTES, SALT_SIZE);
-    bytesToRemove += SALT_SIZE;
-  }
-  removeBytes(textInBytes, textSize, bytesToRemove);
-
-  int blocks = blocksCount(textSize);
-
-  // create a newBlock when the textInBytes size is a multiple of BLOCK_SIZE and action is 1 (encrypt)
-  if (action == 1 && textSize % BLOCK_SIZE == 0)
+  // Se a operação for de criptografia e o tamanho dos dados for múltiplo do tamanho do bloco, um novo bloco é adicionado
+  if (operationType == Encrypt && dataSize % BLOCK_SIZE == 0)
   {
     blocks++;
   }
+  return blocks;
+}
 
+/**
+ * @brief Extrai o tamanho dos dados a partir dos primeiros 4 bytes de um vetor de dados.
+ *
+ * @param data Vetor de dados que contém os primeiros 4 bytes representando o tamanho.
+ * @return O tamanho dos dados extraídos.
+ */
+uint32_t getDataSize(unsigned char *data)
+{
+  // Extrai os 4 bytes iniciais que representam o tamanho
+  unsigned char dataSizeInBytes[DATA_SIZE_BYTES];
+
+  for (int i = 0; i < DATA_SIZE_BYTES; i++)
+  {
+    dataSizeInBytes[i] = data[i];
+  }
+
+  return bytesToUInt(dataSizeInBytes);
+}
+
+/**
+ * @brief Implementa o modo de operação ECB (Electronic Codebook) para criptografia ou descriptografia.
+ *
+ * @param data Um ponteiro para o vetor de dados a ser processado.
+ * @param dataBlocks Uma matriz de blocos de dados resultantes.
+ * @param salt Um ponteiro para o vetor que armazena o "salt" usado na derivação da chave.
+ * @param dataSize Tamanho dos dados de entrada.
+ * @param operationType O tipo de operação a ser executada (Encrypt ou Decrypt).
+ * @return 0 se a operação for bem-sucedida; caso contrário, retorna um valor diferente.
+ */
+int ecb(unsigned char **data, unsigned char (*dataBlocks)[BLOCK_SIZE], unsigned char **salt, uint32_t dataSize, enum OperationType operationType)
+{
+  // Calcula quantos bytes precisam ser removidos dos dados, dependendo da operação
+  short bytesToRemove = DATA_SIZE_BYTES;
+
+  if (operationType == Decrypt)
+  {
+    // Se estiver descriptografando, o "salt" é copiado e removido dos dados
+    memcpy((*salt), (*data) + DATA_SIZE_BYTES, SALT_SIZE);
+    bytesToRemove += SALT_SIZE;
+  }
+  removeBytes(data, dataSize, bytesToRemove);
+
+  // Calcula o número de blocos necessários com base no tamanho dos dados
+  int blocks = getBlockCount(dataSize, operationType);
+
+  // Divide os dados em blocos, adicionando preenchimento, conforme necessário
   for (int blockIndex = 0; blockIndex < blocks; blockIndex++)
   {
-    // count the number of bytes in the block, if the block is the last, the number of bytes is the remainder of the division
-    // Ex: textSize = 32, BLOCK_SIZE = 16, blocks = 3, blockIndex = 2, blockTextSize = 32 - 2 * 16 = 0
-    // Ex: textSize = 33, BLOCK_SIZE = 16, blocks = 3, blockIndex = 2, blockTextSize = 33 - 2 * 16 = 1
-    // Ex: textSize = 6, BLOCK_SIZE = 16, blocks = 1, blockIndex = 0, blockTextSize = 6 - 0 * 16 = 6
-    // ex: textSize = 807988, BLOCK_SIZE = 16, blocks = 50500, blockIndex = 50499, blockTextSize = 807988 - 50499 * 16 = 4
-    int blockTextSize = (blockIndex == blocks - 1) ? (textSize - blockIndex * BLOCK_SIZE) : BLOCK_SIZE;
+    // Calcula o tamanho do bloco atual
+    int blockdataSize = (blockIndex == blocks - 1) ? (dataSize - blockIndex * BLOCK_SIZE) : BLOCK_SIZE;
 
-    // create a padding byte, if the block is the last, the padding byte is the number of bytes to complete the block
-    unsigned char paddingByte = (blockTextSize < BLOCK_SIZE) ? (BLOCK_SIZE - blockTextSize) : BLOCK_SIZE;
+    // Calcula o byte de preenchimento para o bloco atual
+    unsigned char paddingByte = (blockdataSize < BLOCK_SIZE) ? (BLOCK_SIZE - blockdataSize) : BLOCK_SIZE;
 
     for (int byteIndex = 0; byteIndex < BLOCK_SIZE; byteIndex++)
     {
-      // ex: textSize: 24, blockTextSize: 16, blockIndex = 0, byteIndex = 0, textBlocks[0][0] = textInBytes[0]
-      // ex: textSize: 32, blockTextSize: 0, blockIndex = 2, byteIndex = 0, textBlocks[2][1] = paddingByte
-      textBlocks[blockIndex][byteIndex] = (byteIndex < blockTextSize) ? (*textInBytes)[blockIndex * BLOCK_SIZE + byteIndex] : paddingByte;
+      // Copia os bytes dos dados para o bloco, adicionando preenchimento
+      dataBlocks[blockIndex][byteIndex] = (byteIndex < blockdataSize) ? (*data)[blockIndex * BLOCK_SIZE + byteIndex] : paddingByte;
     }
   }
 
   return 0;
 }
-/**
- * Função do modo de operaçao que desfaz os blocos e passa para o vetor de texto. Quando action -1 (descriptografar), remove os bytes de preenchimento
- */
-void invEcb(unsigned char (*textBlocks)[BLOCK_SIZE], uint32_t textSize, unsigned char **textVector, int blocks, unsigned char **salt, short action)
-{
-  int vectorSize = blocks * BLOCK_SIZE + TEXT_SIZE_BYTES;
-  unsigned char textSizeBytes[4];
-  short initMessage = TEXT_SIZE_BYTES;
-  unsigned char lastByte = textBlocks[blocks - 1][BLOCK_SIZE - 1];
 
-  // Coloca o tamanho do texto e o salt no inicio do vetor se for action 1 (criptografar)
-  if (action == 1)
+/**
+ * @brief Implementa a operação inversa do modo de operação ECB (Electronic Codebook) para recuperar o vetor de texto original.
+ *
+ * @param dataBlocks Matriz de blocos de dados resultantes do processo de criptografia ou descriptografia.
+ * @param dataSize Tamanho original dos dados de entrada.
+ * @param dataVector Um ponteiro para o vetor de texto recuperado.
+ * @param blocks O número de blocos de dados usados.
+ * @param salt Um ponteiro para o "salt" usado na derivação da chave.
+ * @param operationType O tipo de operação realizada (Encrypt ou Decrypt).
+ */
+void invEcb(unsigned char (*dataBlocks)[BLOCK_SIZE], uint32_t dataSize, unsigned char **dataVector, int blocks, unsigned char **salt, enum OperationType operationType)
+{
+  // Calcula o tamanho final do vetor de dados com base no número de blocos
+  int vectorSize = blocks * BLOCK_SIZE + DATA_SIZE_BYTES;
+  unsigned char dataSizeInBytes[4];
+  short initdata = DATA_SIZE_BYTES;
+  unsigned char lastByte = dataBlocks[blocks - 1][BLOCK_SIZE - 1];
+
+  // Adiciona os 4 bytes que representam quantos bytes compõem os dados e o "salt" no início do vetor se for uma operação de criptografia
+  if (operationType == Encrypt)
   {
     vectorSize += SALT_SIZE;
-    initMessage += SALT_SIZE;
-    textSize = textSize + (BLOCK_SIZE - textSize % BLOCK_SIZE);
+    initdata += SALT_SIZE;
+    dataSize = dataSize + (BLOCK_SIZE - dataSize % BLOCK_SIZE);
   }
   else
   {
-    // Quando action -1 (descriptografar), remove os bytes de preenchimento
+    // Remove os bytes de preenchimento quando descriptografando
     vectorSize -= lastByte;
-    textSize -= lastByte;
+    dataSize -= lastByte;
   }
 
-  reallocMemory(textVector, vectorSize);
+  reallocMemory(dataVector, vectorSize);
 
-  uintToBytes(textSize, textSizeBytes);
+  // Converte a quantidade de bytes dos dados em 4 bytes
+  uintToBytes(dataSize, dataSizeInBytes);
 
   for (int textVIndex = 0; textVIndex < vectorSize; textVIndex++)
   {
-    if (textVIndex < TEXT_SIZE_BYTES)
+    if (textVIndex < DATA_SIZE_BYTES)
     {
-      (*textVector)[textVIndex] = textSizeBytes[textVIndex];
+      // Copia os 4 bytes que representam quantos bytes compõem os dados no início do vetor
+      (*dataVector)[textVIndex] = dataSizeInBytes[textVIndex];
     }
-    else if (textVIndex < initMessage) // if action == 1, move salt to the first BLOCK_SIZE bytes
+    else if (textVIndex < initdata)
     {
-      (*textVector)[textVIndex] = (*salt)[textVIndex - TEXT_SIZE_BYTES];
+      // Se a operação for de criptografia, move o "salt" para os primeiros bytes do vetor depois dos 4 iniciais que representam o tamanho dos dados
+      (*dataVector)[textVIndex] = (*salt)[textVIndex - DATA_SIZE_BYTES];
     }
     else
     {
-      short blockIndex = (textVIndex - initMessage) / BLOCK_SIZE;
-      short byteIndex = (textVIndex - initMessage) % BLOCK_SIZE;
+      // Copia os bytes dos blocos de dados no vetor de data
+      short blockIndex = (textVIndex - initdata) / BLOCK_SIZE;
+      short byteIndex = (textVIndex - initdata) % BLOCK_SIZE;
 
-      (*textVector)[textVIndex] = textBlocks[blockIndex][byteIndex];
+      (*dataVector)[textVIndex] = dataBlocks[blockIndex][byteIndex];
     }
   }
 }

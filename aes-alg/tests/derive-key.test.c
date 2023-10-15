@@ -31,16 +31,16 @@ void testDeriveKey()
       return;
     }
 
-    unsigned char keySize = nearestKeySize(keyLength);
+    unsigned char keySize = getNearestKeySize(keyLength);
     unsigned char keyEncryptResult[keySize];
     unsigned char keyDecryptResult[keySize];
 
-    deriveKey(keysForTest[i], keyEncryptResult, &keyLength, salt, 1);
+    deriveKey(keysForTest[i], keyEncryptResult, &keyLength, salt, Encrypt);
 
     // trocar 1 caracter do salt muda o resultado, por isso é seguro.
     // salt[0] = '@';
 
-    deriveKey(keysForTest[i], keyDecryptResult, &keyLength, salt, -1);
+    deriveKey(keysForTest[i], keyDecryptResult, &keyLength, salt, Decrypt);
 
     eqVetor(keyEncryptResult, keyDecryptResult, keySize);
     printf("\n");

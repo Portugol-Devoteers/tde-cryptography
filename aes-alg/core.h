@@ -2,38 +2,37 @@
 #include <stdlib.h>
 #include "utils.h"
 
+#define BLOCK_SIZE 16
+
 /**
- * Função que realiza a operação xor entre dois vetores de 16 bytes.
+ * Função que realiza a operação xor entre dois vetores de BLOCK_SIZE bytes.
  *
  * @param state O state a ser substituido.
  * @param key A chave a ser utilizada na operação.
  * @return void - O state é substituido diretamente.
  */
-extern void addRoundKey(unsigned char *state, unsigned char *key)
+void addRoundKey(unsigned char *state, unsigned char *key)
 {
-  for (int i = 0; i < 16; i++)
+  for (int index = 0; index < BLOCK_SIZE; index++)
   {
-    unsigned char aux = state[i];
-    unsigned char aux2 = key[i]; // TODO undo this, used only for debug
-    state[i] = aux ^ aux2;
+    state[index] ^= key[index];
   }
 }
 
 /**
- * Substitui cada valor do state por o valor correspondente no S-box (action = 1 (normal) ou -1 (invertida)
+ * Substitui cada valor do state por o valor correspondente no S-box (operationType = 1 (normal) ou -1 (invertida)
  *
  * @param state O state a ser substituido.
- * @param action 1 para substituir, -1 para substituir invertido.
+ * @param operationType 1 para substituir, -1 para substituir invertido.
  * @return void - O state é substituido diretamente.
  */
-extern void byteSub(unsigned char *state, short action)
+void byteSub(unsigned char *state, enum OperationType operationType)
 {
-  for (int i = 0; i < 16; i++)
+  for (int index = 0; index < BLOCK_SIZE; index++)
   {
-    int x, y;
-    extractXY(state[i], &x, &y);
-    unsigned char aux = action == 1 ? sBox[x][y] : invSBox[x][y]; // TODO undo this, used only for debug
-    state[i] = aux;
+    int line, collumn;
+    extractXY(state[index], &line, &collumn);
+    state[index] = operationType == 1 ? sBox[line][collumn] : invSBox[line][collumn];
   }
 }
 
@@ -48,28 +47,31 @@ typedef struct
 /**
  * Função que embaralha as linhas do state.
  * @param state O state a ser embaralhado.
- * @param action 1 para embaralhar, -1 para desembaralhar.
+ * @param operationType 1 para embaralhar, -1 para desembaralhar.
  * @return void - O state é substituido diretamente.
  */
-extern void shiftRow(unsigned char *state, short action)
+void shiftRow(unsigned char *state, enum OperationType operationType)
 {
-  int line, col, repeatTime;
+  int line, collumn, repeatTime;
   unsigned char aux, oldVal;
+
   for (line = 0; line < COLUMNS; line++)
   {
-
     for (repeatTime = 0; repeatTime < line; repeatTime++)
     {
       state_index i = {line};
 
       oldVal = state[i.value];
-      for (col = 0; col <= COLUMNS; col++)
+
+      for (collumn = 0; collumn <= COLUMNS; collumn++)
       {
         aux = state[i.value];
 
         state[i.value] = oldVal;
+
         oldVal = aux;
-        addValue(i, COLUMNS * (-action));
+
+        addValue(i, COLUMNS * (-operationType));
       }
     }
   }
@@ -93,45 +95,39 @@ unsigned char sumWithEorL(unsigned char n1, unsigned char n2)
   if (n1 == 0)
     return 0;
 
-  unsigned char n1L = getEorLValue(n1, lTable);
-  unsigned char n2L = getEorLValue(n2, lTable);
-  unsigned int lSum = n1L + n2L;
+  unsigned int lSum = getEorLValue(n1, lTable) + getEorLValue(n2, lTable);
+
   if (lSum > 0xFF)
     lSum -= 0xFF;
+
   return getEorLValue((unsigned char)lSum, eTable);
 }
 
 /**
  * Função que realiza a operação de multiplicação de matrizes.
  * @param state O state a ser embaralhado.
- * @param action 1 para embaralhar, -1 para desembaralhar.
+ * @param operationType 1 para criptografia, -1 para descriptografia.
  * @return void - O state é substituido diretamente.
  */
-extern void mixColumn(unsigned char *state, short action)
+void mixColumn(unsigned char *state, enum OperationType operationType)
 {
-  const unsigned char(*matrix)[4] = action == 1 ? multiplicationMatrixEncrypt : multiplicationMatrixDecrypt;
+  const unsigned char(*matrix)[4] = operationType == Encrypt ? multiplicationMatrixEncrypt : multiplicationMatrixDecrypt;
+
   for (int j = 0; j < 4; j++)
   {
-    unsigned char aux[4];
-    int stateIndex;
-    for (int i = 0; i < 4; i++)
-    {
-      stateIndex = i + (4 * j);
-      aux[i] = state[stateIndex];
-    }
+    short stateIndex;
 
     for (int i = 0; i < 4; i++)
     {
       stateIndex = i + (4 * j);
 
-      unsigned char colsXor = 0;
+      unsigned char xorResult = 0;
       for (int k = 0; k < 4; k++)
       {
-        unsigned char r = sumWithEorL(aux[k], matrix[i][k]); // TODO undo this, used only for debug
-        colsXor ^= r;
+        xorResult ^= sumWithEorL(state[stateIndex], matrix[i][k]);
       }
 
-      state[stateIndex] = colsXor;
+      state[stateIndex] = xorResult;
     }
   }
 }

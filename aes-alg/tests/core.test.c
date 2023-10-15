@@ -34,8 +34,8 @@ void byteSubTest()
     unsigned char state[16];
     unsigned char *expect;
 
-    int action = i * -2 + i;
-    if (action == 1)
+    int operationType = i * -2 + i;
+    if (operationType == 1)
     {
       printf("encrypt\n");
       memcpy(state, stateEncrypt, 16);
@@ -48,7 +48,7 @@ void byteSubTest()
       expect = expectDecrypt;
     }
 
-    byteSub(state, action);
+    byteSub(state, operationType);
     eqVetor(state, expect, 16);
   }
   printf("========================================\n\n\n");
@@ -76,8 +76,8 @@ void testShiftRow()
                                0x0D, 0x0E, 0x0F, 0x10};
     unsigned char *expect;
 
-    int action = i * -2 + i;
-    if (action == 1)
+    int operationType = i * -2 + i;
+    if (operationType == 1)
     {
       printf("encrypt\n");
       expect = expectEncrypt;
@@ -88,7 +88,7 @@ void testShiftRow()
       expect = expectDecrypt;
     }
 
-    shiftRow(state, action);
+    shiftRow(state, operationType);
     eqVetor(state, expect, 16);
   }
   printf("========================================\n\n\n");
@@ -122,18 +122,18 @@ void testMixColumn()
   int i;
   for (i = -1; i < 2; i += 2)
   {
-    int action = i * -2 + i;
+    int operationType = i * -2 + i;
 
-    if (action == 1)
+    if (operationType == 1)
     {
       printf("encrypt\n");
-      mixColumn(encryptState, action);
+      mixColumn(encryptState, operationType);
       eqVetor(encryptState, expectEncrypt, 16);
     }
     else
     {
       printf("decrypt\n");
-      mixColumn(decryptState, action);
+      mixColumn(decryptState, operationType);
       eqVetor(decryptState, expectDecrypt, 16);
     }
   }

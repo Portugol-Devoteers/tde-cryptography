@@ -1,6 +1,7 @@
 #include <stdio.h>
+#include <string.h>
 
-extern void printHexVetor(unsigned char *vetor, short vetorSize)
+void printHexVetor(unsigned char *vetor, short vetorSize)
 {
   for (int i = 0; i < vetorSize; i++)
   {
@@ -9,7 +10,7 @@ extern void printHexVetor(unsigned char *vetor, short vetorSize)
   printf("\n\n");
 }
 
-extern void printReceiveExpect(unsigned char *receive, unsigned char *expect, short vetorSize)
+void printReceiveExpect(unsigned char *receive, unsigned char *expect, short vetorSize)
 {
   printf("receive: ");
   printHexVetor(receive, vetorSize);
@@ -20,13 +21,13 @@ extern void printReceiveExpect(unsigned char *receive, unsigned char *expect, sh
   printf("\n");
 }
 
-extern void printTestDescribe(char *testName)
+void printTestDescribe(char *testName)
 {
   printf("Teste %s\n", testName);
   printf("========================================\n");
 }
 
-extern void printTestResult(int result)
+void printTestResult(int result)
 {
   if (result == 0)
   {
@@ -38,7 +39,7 @@ extern void printTestResult(int result)
   }
 }
 
-extern void eqVetor(unsigned char *receive, unsigned char *expect, short vetorSize)
+void eqVetor(unsigned char *receive, unsigned char *expect, short vetorSize)
 {
   int j;
   for (j = 0; j < vetorSize; j++)
@@ -55,7 +56,7 @@ extern void eqVetor(unsigned char *receive, unsigned char *expect, short vetorSi
   printTestResult(1);
 }
 
-extern void eqString(unsigned char *receive, unsigned char *expect, short stringSize)
+void eqString(unsigned char *receive, unsigned char *expect, short stringSize)
 {
   int j;
   for (j = 0; j < stringSize; j++)
@@ -79,7 +80,7 @@ extern void eqString(unsigned char *receive, unsigned char *expect, short string
   printTestResult(1);
 }
 
-extern void createPlaintext(char *text, int maxSize)
+void loren(char *text, int maxSize)
 {
   char loren[] = "_YF20wocnOJZ1$ }{LiN_kFJmPraL_M>w;>;$?94^b=8Bn0}a4Ml.n8vEJ_[<8kF^10hm-W&i$}2H{\"\'\"%|Vk!My/FaqH/q\"5yC%L[$=WI\"g>zk/2f_YeH~/Bxv<j<EqHEUf=iT(6{nX:>FvX0 fZU!VN:km&eyPxjK&[$ThJZ3Uq7(pAN/x|*NE\'gbWDv43(gKTS-^Pdb9;2UICd^;*>U$}*/5vU$RNXZWpZ:Q!1=;@SzhieEdbo1x=xFvS6>q1/Jg>iYBEZ?,F 9%~qh?wg!a7K#c/x9f>N_{|#T#, jU%+]0\'GPXWDt,\\uiZU.m=2d+a\"|0T;Hb|mr1`{xXnXOYA:XVSd/(6j5y$Y8k> =z ,r;?eEkWz_tqBuu?@{T90=43Q\\hFo(arByVq!eK^3?mBQ>hf-DXy2LMSQMWuZ^ue~^-=t6T$m3FrWDC!-NJ=6.#2\'D0Zw/M8Y`</c9\'2bJ>[sj)oseOXw/Y*&UD2Z.\'(_uRf?(xdH";
 

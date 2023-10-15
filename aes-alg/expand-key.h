@@ -2,7 +2,13 @@
 #include <stdlib.h>
 #include "utils.h"
 
-void VparaM(unsigned char *chave, unsigned char M[4][4])
+/**
+ * @brief Converte um vetor de 16 bytes em uma matriz 4x4.
+ *
+ * @param key Vetor de 16 bytes a ser convertido.
+ * @param matrix Matriz 4x4 que armazenará o resultado da conversão.
+ */
+void vectorToMatrix(unsigned char *key, unsigned char matrix[4][4])
 {
   int i, j, k = 0;
 
@@ -10,12 +16,19 @@ void VparaM(unsigned char *chave, unsigned char M[4][4])
   {
     for (j = 0; j < 4; j++)
     {
-      M[j][i] = (unsigned char)chave[k];
+      matrix[j][i] = (unsigned char)key[k];
       k++;
     }
   }
 }
-void MparaV(const unsigned char M[4][4], unsigned char chave[])
+
+/**
+ * @brief Converte uma matriz 4x4 em um vetor de 16 bytes.
+ *
+ * @param matrix Matriz 4x4 a ser convertida.
+ * @param key Vetor de 16 bytes que armazenará o resultado da conversão.
+ */
+void matrixToVector(const unsigned char matrix[4][4], unsigned char key[])
 {
   int i, j, k = 0;
 
@@ -23,34 +36,19 @@ void MparaV(const unsigned char M[4][4], unsigned char chave[])
   {
     for (j = 0; j < 4; j++)
     {
-      chave[k] = M[j][i];
+      key[k] = matrix[j][i];
       k++;
     }
   }
 }
-void printM(unsigned char M[4][4])
-{
-  printf("Matriz 4x4 resultante:\n");
-  for (int i = 0; i < 4; i++)
-  {
-    for (int j = 0; j < 4; j++)
-    {
-      printf("%02X ", M[j][i]); // Imprime o valor hexadecimal do byte
-    }
-    printf("\n");
-  }
-}
 
-void printG(unsigned char g[4])
-{
-  for (int i = 0; i < 4; i++)
-  {
-    printf("%02X ", g[i]);
-  }
-  printf("\n");
-}
-
-void RotWorld(unsigned char matrix[4][4], unsigned char g[4])
+/**
+ * @brief Realiza um deslocamento circular em 4 bytes semelhante à função Shift Row.
+ *
+ * @param matrix Matriz 4x4 na qual o deslocamento é aplicado.
+ * @param g Vetor de 4 bytes que armazenará o resultado do deslocamento.
+ */
+void RotWord(unsigned char matrix[4][4], unsigned char g[4])
 {
   for (int i = 0; i < 3; i++)
   {
@@ -60,6 +58,11 @@ void RotWorld(unsigned char matrix[4][4], unsigned char g[4])
   g[3] = matrix[0][3];
 }
 
+/**
+ * @brief Aplica a substituição do valor S-box a cada um dos 4 bytes no argumento.
+ *
+ * @param g Vetor de 4 bytes nos quais a substituição S-box será aplicada.
+ */
 void SubWord(unsigned char g[4])
 {
   int x, y;
@@ -70,7 +73,13 @@ void SubWord(unsigned char g[4])
   }
 }
 
-void Rcon(int round, unsigned char g[4])
+/**
+ * @brief Calcula o valor do Round Constant usado na expansão da chave do algoritmo AES com base no round.
+ *
+ * @param round O round para o qual o valor Round Constant é calculado.
+ * @param g Vetor de 4 bytes no qual o valor Round Constant é armazenado.
+ */
+void getRoundConstant(int round, unsigned char g[4])
 {
   unsigned int result = 0;
 
@@ -113,12 +122,18 @@ void Rcon(int round, unsigned char g[4])
     result = 0x00000000;
   }
 
-  // Realize a operação XOR com todos os elementos da matriz M
+  // Realize a operação XOR com todos os elementos da matriz matrix
 
   g[0] = g[0] ^ result;
 }
 
-void fim(unsigned char matrix[4][4], unsigned char g[4])
+/**
+ * @brief Realiza operações de combinação final para expandir a chave.
+ *
+ * @param matrix Matriz 4x4 na qual as operações de combinação final são aplicadas.
+ * @param g Vetor de 4 bytes usado nas operações de combinação.
+ */
+void end(unsigned char matrix[4][4], unsigned char g[4])
 {
   // Faz o XOR entre a primeira linha e o vetor g
   for (int j = 0; j < 4; j++)
@@ -135,45 +150,20 @@ void fim(unsigned char matrix[4][4], unsigned char g[4])
     }
   }
 }
-
-extern void expandeKey(unsigned char *chave, int round)
+/**
+ * @brief Expande a chave de criptografia usando as funções definidas na especificação AES.
+ *
+ * @param key A chave original a ser expandida.
+ * @param round O round atual da expansão da chave.
+ */
+void expandeKey(unsigned char *key, short round)
 {
-  unsigned char M[4][4];
+  unsigned char matrix[4][4];
   unsigned char g[4];
-  VparaM(chave, M);
-  RotWorld(M, g);
+  vectorToMatrix(key, matrix);
+  RotWord(matrix, g);
   SubWord(g);
-  Rcon(round, g);
-  fim(M, g);
-  MparaV(M, chave);
+  getRoundConstant(round, g);
+  end(matrix, g);
+  matrixToVector(matrix, key);
 }
-
-// int main()
-// {
-//   int tamanho = 16; // Tamanho do vetor, ajuste conforme necessário
-//   unsigned char *hex_values = (unsigned char *)malloc(tamanho * sizeof(unsigned char));
-//   int round;
-
-//   printf("Digite os valores hexadecimais separados por espaços: ");
-//   for (int i = 0; i < tamanho; i++)
-//   {
-//     char hex_string[3];
-//     if (scanf("%2s", hex_string) != 1)
-//     {
-//       printf("Erro ao ler entrada.\n");
-//       free(hex_values);
-//       return 1;
-//     }
-//     hex_values[i] = (unsigned char)strtol(hex_string, NULL, 16);
-//   }
-
-//   printf("Em qual round estamos: ");
-//   scanf("%i", &round);
-
-//   printf("\n\n\nFazer tudo isso com uma funcao apenas (expandeKey):\n\n");
-//   expandeKey(hex_values, round);
-
-//   free(hex_values);
-
-//   return 0;
-// }
