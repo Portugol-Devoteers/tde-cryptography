@@ -1,3 +1,4 @@
+#include "includes.h"
 #include "cbc.h"
 
 int blocksCount(char *text)

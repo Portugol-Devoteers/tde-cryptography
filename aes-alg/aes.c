@@ -1,7 +1,11 @@
-
 #include "aes.h"
+#include "includes.h"
+#include "core.h"
+#include "derive-key.h"
+#include "ecb.h"
+#include "expand-key.h"
 
-void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, enum OperationType operationType)
+void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, short operationType)
 {
   short rounds = getRoundsCount(keyLength);
   int i;
@@ -12,7 +16,7 @@ void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, en
     return;
   }
 
-  if (operationType == Encrypt)
+  if (operationType == 1)
   {
     addRoundKey(state, roundkey); // Adição da chave de rodada
     for (i = 0; i < rounds; i++)
@@ -63,7 +67,7 @@ void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, en
   }
 }
 
-int aes(unsigned char **data, enum OperationType operationType, char *key)
+int aes(unsigned char **data, short operationType, char *key)
 {
   unsigned char roundkey[16];
   short keyLength = getKeyLength(key);

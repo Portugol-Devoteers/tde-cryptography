@@ -1,10 +1,6 @@
 #ifndef EXPAND_KEY_H
 #define EXPAND_KEY_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "utils.h"
-
 /**
  * @brief Converte um vetor de 16 bytes em uma matriz 4x4.
  *

@@ -1,8 +1,9 @@
 #include "derive-key.h"
+#include "includes.h"
 
-int deriveKey(char *key, unsigned char *derivedKey, short *keyLength, unsigned char **salt, enum OperationType operationType)
+int deriveKey(char *key, unsigned char *derivedKey, short *keyLength, unsigned char **salt, short operationType)
 {
-    if (operationType == Encrypt)
+    if (operationType == 1)
     {
         RAND_bytes((*salt), sizeof((*salt)));
     }

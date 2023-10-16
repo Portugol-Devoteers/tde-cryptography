@@ -1,4 +1,6 @@
 #include "expand-key.h"
+#include "includes.h"
+#include "globals.h"
 
 void vectorToMatrix(unsigned char *key, unsigned char matrix[4][4])
 {

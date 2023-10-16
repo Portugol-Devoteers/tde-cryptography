@@ -1,12 +1,14 @@
-#include "ecb.h"
 
-int getBlockCount(uint32_t dataSize, enum OperationType operationType)
+#include "ecb.h"
+#include "includes.h"
+
+int getBlockCount(uint32_t dataSize, short operationType)
 {
   // Calcula o número de blocos arredondando para cima usando ceil
   int blocks = (int)ceil((double)dataSize / BLOCK_SIZE);
 
   // Se a operação for de criptografia e o tamanho dos dados for múltiplo do tamanho do bloco, um novo bloco é adicionado
-  if (operationType == Encrypt && dataSize % BLOCK_SIZE == 0)
+  if (operationType == 1 && dataSize % BLOCK_SIZE == 0)
   {
     blocks++;
   }
@@ -26,12 +28,12 @@ uint32_t getDataSize(unsigned char *data)
   return bytesToUInt(dataSizeInBytes);
 }
 
-int ecb(unsigned char **data, unsigned char (*dataBlocks)[BLOCK_SIZE], unsigned char **salt, uint32_t dataSize, enum OperationType operationType)
+int ecb(unsigned char **data, unsigned char (*dataBlocks)[BLOCK_SIZE], unsigned char **salt, uint32_t dataSize, short operationType)
 {
   // Calcula quantos bytes precisam ser removidos dos dados, dependendo da operação
   short bytesToRemove = DATA_SIZE_BYTES;
 
-  if (operationType == Decrypt)
+  if (operationType == -1)
   {
     // Se estiver descriptografando, o "salt" é copiado e removido dos dados
     memcpy((*salt), (*data) + DATA_SIZE_BYTES, SALT_SIZE);
@@ -61,7 +63,7 @@ int ecb(unsigned char **data, unsigned char (*dataBlocks)[BLOCK_SIZE], unsigned 
   return 0;
 }
 
-void invEcb(unsigned char (*dataBlocks)[BLOCK_SIZE], uint32_t dataSize, unsigned char **dataVector, int blocks, unsigned char **salt, enum OperationType operationType)
+void invEcb(unsigned char (*dataBlocks)[BLOCK_SIZE], uint32_t dataSize, unsigned char **dataVector, int blocks, unsigned char **salt, short operationType)
 {
   // Calcula o tamanho final do vetor de dados com base no número de blocos
   int vectorSize = blocks * BLOCK_SIZE + DATA_SIZE_BYTES;
@@ -70,7 +72,7 @@ void invEcb(unsigned char (*dataBlocks)[BLOCK_SIZE], uint32_t dataSize, unsigned
   unsigned char lastByte = dataBlocks[blocks - 1][BLOCK_SIZE - 1];
 
   // Adiciona os 4 bytes que representam quantos bytes compõem os dados e o "salt" no início do vetor se for uma operação de criptografia
-  if (operationType == Encrypt)
+  if (operationType == 1)
   {
     vectorSize += SALT_SIZE;
     initdata += SALT_SIZE;

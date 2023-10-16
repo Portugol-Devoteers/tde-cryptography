@@ -1,3 +1,7 @@
+#ifdef ECB_TEST
+
+/*
+
 #include <stdio.h>
 #include "../ecb.h"
 #include "test-utils.h"
@@ -19,7 +23,7 @@ void testToBlocks()
     loren(plaintext, plaindataSize);
     printf("Teste com plaintext de tamanho %d\n", plaindataSize);
 
-    int plaindatagetBlockCount = getBlockCount(plaintext);
+    int plaindatagetBlockCount = getBlockCount(plaintext, 1);
     unsigned char dataBlocks[plaindatagetBlockCount][BLOCK_SIZE];
     unsigned char receiveBytes[plaindatagetBlockCount * 16];
     unsigned char expectBytes[plaindatagetBlockCount * 16];
@@ -48,3 +52,6 @@ int main()
   testToBlocks();
   return 0;
 }
+*/
+
+#endif

@@ -1,11 +1,8 @@
 #ifndef CORE_H
 #define CORE_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include "utils.h"
 
-#define BLOCK_SIZE 16
+
 #define COLUMNS 4
 #define addValue(n, qt) n.value += qt
 
@@ -30,7 +27,7 @@ void addRoundKey(unsigned char *state, unsigned char *key);
  * @param operationType 1 para substituir, -1 para substituir invertido.
  * @return void - O state é substituido diretamente.
  */
-void byteSub(unsigned char *state, enum OperationType operationType);
+void byteSub(unsigned char *state, short operationType);
 
 /**
  * Função que embaralha as linhas do state.
@@ -38,7 +35,7 @@ void byteSub(unsigned char *state, enum OperationType operationType);
  * @param operationType 1 para embaralhar, -1 para desembaralhar.
  * @return void - O state é substituido diretamente.
  */
-void shiftRow(unsigned char *state, enum OperationType operationType);
+void shiftRow(unsigned char *state, short operationType);
 
 /**
  * Realiza a soma de dois valores de acordo com uma tabela de substituição
@@ -61,6 +58,6 @@ unsigned char sumWithEorL(unsigned char n1, unsigned char n2);
  * @param operationType 1 para criptografia, -1 para descriptografia.
  * @return void - O state é substituido diretamente.
  */
-void mixColumn(unsigned char *state, enum OperationType operationType);
+void mixColumn(unsigned char *state, short operationType);
 
 #endif /* CORE_H */

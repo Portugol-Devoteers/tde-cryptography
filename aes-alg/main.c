@@ -1,6 +1,7 @@
+#ifdef PROD
+
 #include <stdio.h>
 #include "aes.h"
-
 /**
  * A resposabilidade de enviar ou receber o texto é do usuário. Deve ser enviado um texto em bytes. O idela é que o texto seja transitado em base64.
  * O texto preciso ter um tamanho de 4 (armazena o tamanho do texto em 4 bytes) + 16 (salt, usado para derivar a chave) + n (tamanho do texto) + n (padding) bytes para armazenar o resultado da criptografia. Para cripitografia o tamanho do texto deve ter um tamanho de 4 + n (tamanho do texto final)
@@ -64,3 +65,5 @@ int main()
 
   return 0;
 }
+
+#endif

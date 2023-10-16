@@ -1,12 +1,6 @@
 #ifndef DERIVE_KEY_H
 #define DERIVE_KEY_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <openssl/rand.h>
-#include <openssl/evp.h>
-#include "utils.h"
 
 /**
  * @brief Deriva uma chave criptográfica a partir de uma chave original usando o algoritmo PBKDF2.
@@ -17,9 +11,9 @@
  * @param derivedKey Um ponteiro para o local onde a chave derivada será armazenada.
  * @param keyLength Um ponteiro para o tamanho da chave original e, após a chamada da função, o tamanho da chave derivada.
  * @param salt Um ponteiro para o valor de "salt" utilizado na derivação. O salt é um vetor de 16 bytes aleatórios. Na criptografia é gerado aleatoriamente e na descriptografia é usado o mesmo salt do processo de criptografia.
- * @param operationType O tipo de operação (Encrypt ou Decrypt) para determinar o uso do "salt".
+ * @param operationType O tipo de operação (1 ou -1) para determinar o uso do "salt".
  * @return Retorna 0 se a derivação for bem-sucedida; caso contrário, retorna um valor diferente.
  */
-int deriveKey(char *key, unsigned char *derivedKey, short *keyLength, unsigned char **salt, enum OperationType operationType);
+int deriveKey(char *key, unsigned char *derivedKey, short *keyLength, unsigned char **salt, short operationType);
 
 #endif /* DERIVE_KEY_H */

@@ -1,7 +1,7 @@
-#include <stdio.h>
+#ifdef AES_TEST
 #include "../aes.h"
+#include "../includes.h"
 #include "test-utils.h"
-#include "../utils.h"
 
 #define MAX_TEXT_SIZE 100000
 #define MIN_TEXT_SIZE 1
@@ -53,10 +53,10 @@ void testAES()
     char key[keySize + 1];
     loren(key, keySize);
 
-    aes(&data, Encrypt, key);
+    aes(&data, 1, key);
 
     printf("\n");
-    aes(&data, Decrypt, key);
+    aes(&data, -1, key);
 
     eqVetor(data, originalText, dataSize + 4);
     printf("\n");
@@ -68,3 +68,4 @@ int main()
   testAES();
   return 0;
 }
+#endif

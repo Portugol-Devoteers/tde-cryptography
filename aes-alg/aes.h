@@ -1,14 +1,8 @@
+
 #ifndef AES_H
 #define AES_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include "core.h"
-#include "derive-key.h"
-#include "utils.h"
-#include "ecb.h"
-#include "expand-key.h"
+
 
 /**
  * @file aes.h
@@ -26,9 +20,9 @@
  * @param[in,out] state O estado do bloco de dados a ser processado.
  * @param[in] roundkey A chave de rodada a ser usada na operação. Deve ter 16 bytes. Sempre é a chave de rodada 0.
  * @param[in] keyLength O tamanho da chave.
- * @param[in] operationType O tipo de operação (Encrypt ou Decrypt).
+ * @param[in] operationType O tipo de operação (1 ou -1).
  */
-void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, enum OperationType operationType);
+void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, short operationType);
 
 /**
  * @brief Criptografa ou descriptografa uma mensagem usando o algoritmo AES.
@@ -38,10 +32,10 @@ void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, en
  * de operação especificado em `operationType`.
  *
  * @param[in,out] data Um ponteiro para o vetor de dados a ser processado.
- * @param[in] operationType O tipo de operação (Encrypt ou Decrypt).
+ * @param[in] operationType O tipo de operação (1 ou -1).
  * @param[in] key A chave a ser usada na operação.
  * @return 0 se a operação foi bem-sucedida, -1 em caso de erro.
  */
-int aes(unsigned char **data, enum OperationType operationType, char *key);
+int aes(unsigned char **data, short operationType, char *key);
 
 #endif /* AES_H */

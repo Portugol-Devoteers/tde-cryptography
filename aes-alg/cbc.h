@@ -1,12 +1,7 @@
 #ifndef CBC_H
 #define CBC_H
 
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-#include <openssl/rand.h>
-
-#define BLOCK_SIZE 16
+#include "includes.h"
 
 int blocksCount(char *text);
 

@@ -1,4 +1,6 @@
 #include "core.h"
+#include "includes.h"
+#include "globals.h"
 
 void addRoundKey(unsigned char *state, unsigned char *key)
 {
@@ -8,7 +10,7 @@ void addRoundKey(unsigned char *state, unsigned char *key)
   }
 }
 
-void byteSub(unsigned char *state, enum OperationType operationType)
+void byteSub(unsigned char *state, short operationType)
 {
   for (int index = 0; index < BLOCK_SIZE; index++)
   {
@@ -18,7 +20,7 @@ void byteSub(unsigned char *state, enum OperationType operationType)
   }
 }
 
-void shiftRow(unsigned char *state, enum OperationType operationType)
+void shiftRow(unsigned char *state, short operationType)
 {
   int line, collumn, repeatTime;
   unsigned char aux, oldVal;
@@ -58,9 +60,9 @@ unsigned char sumWithEorL(unsigned char n1, unsigned char n2)
   return getEorLValue((unsigned char)lSum, eTable);
 }
 
-void mixColumn(unsigned char *state, enum OperationType operationType)
+void mixColumn(unsigned char *state, short operationType)
 {
-  const unsigned char(*matrix)[4] = operationType == Encrypt ? multiplicationMatrixEncrypt : multiplicationMatrixDecrypt;
+  const unsigned char(*matrix)[4] = operationType == 1 ? multiplicationMatrixEncrypt : multiplicationMatrixDecrypt;
 
   for (int j = 0; j < 4; j++)
   {
