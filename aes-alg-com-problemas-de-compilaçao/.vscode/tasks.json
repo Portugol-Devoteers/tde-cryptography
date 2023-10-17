@@ -48,6 +48,34 @@
       "problemMatcher": ["$gcc"]
     },
     {
+      "label": "Gcc build many files",
+      "type": "shell",
+      "command": "gcc",
+      "args": [
+        "-fcolor-diagnostics",
+        "-fansi-escape-codes",
+        "-g",
+        // "tests/test-utils.c",
+        // "tests/aes-test.c",
+        "aes.c",
+        "core.c",
+        "derive-key.c",
+        "ecb.c",
+        "expand-key.c",
+        "globals.c",
+        "main.c",
+        "utils.c",
+        "-o",
+        "${fileDirname}/.build/output",
+        "-I/opt/local/libexec/openssl3/include",
+        "-L/opt/local/libexec/openssl3/lib",
+        "-lssl",
+        "-lcrypto"
+      ],
+      "group": "build",
+      "problemMatcher": ["$gcc"]
+    },
+    {
       "label": "C/C++: clang",
       "type": "shell",
       "command": "gcc",
@@ -60,7 +88,44 @@
         "-lssl",
         "-lcrypto"
       ],
-      "group": "build"
+      "group": "build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "C/C++: clang",
+      "type": "shell",
+      "command": "gcc",
+      "args": [
+        "-o",
+        "output",
+        "aes.c",
+        "code.c",
+        "derive-key.c",
+        "ecb.c",
+        "expand-key.c",
+        "globals.c",
+        "main.c",
+        "utils.c",
+        "-I/opt/local/libexec/openssl3/include",
+        "-L/opt/local/libexec/openssl3/lib",
+        "-lssl",
+        "-lcrypto"
+      ],
+      "group": "build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      }
+    },
+    {
+      "label": "Build Project - Compile all files",
+      "type": "shell",
+      "command": "make",
+      "group": "build",
+      "presentation": {
+        "reveal": "silent"
+      }
     }
   ]
 }

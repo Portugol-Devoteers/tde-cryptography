@@ -1,0 +1,95 @@
+{
+  "configurations": [
+    {
+      "name": "C/C++: gcc build",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}/${fileBasenameNoExtension}",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "lldb",
+      "preLaunchTask": "Gcc build"
+    },
+    {
+      "name": "C/C++: clang build",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/${fileBasenameNoExtension}",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": true,
+      "MIMode": "lldb",
+      "preLaunchTask": "C/C++: clang"
+    },
+    {
+      "name": "C/C++: gcc build openssl3",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}/.build/${fileBasenameNoExtension}",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing"
+        }
+      ],
+      "preLaunchTask": "Gcc build openssl3"
+      // "miDebuggerPath": "gdb",
+      // "serverStarted": "Info: gdb",
+      // "debugServerPath": "gdbserver"
+    },
+    {
+      "name": "C/C++: gcc build many files",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${fileDirname}/.build/output",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${fileDirname}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "lldb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing"
+        }
+      ],
+      "preLaunchTask": "Gcc build many files"
+      // "miDebuggerPath": "gdb",
+      // "serverStarted": "Info: gdb",
+      // "debugServerPath": "gdbserver"
+    },
+    {
+      "name": "C gcc build - all .c files with makefile",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/.build/${fileBasenameNoExtension}.o", // Caminho para o executável
+      "args": [], // Argumentos do programa (se houver)
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [
+        {
+          "description": "Enable pretty-printing for gdb",
+          "text": "-enable-pretty-printing"
+        }
+      ],
+      "preLaunchTask": "Build Project - Compile all files", // Tarefa a ser executada antes do lançamento
+      "miDebuggerPath": "/opt/homebrew/Cellar/glib/2.76.3/share/gdb"
+    }
+  ],
+  "version": "2.0.0"
+}
