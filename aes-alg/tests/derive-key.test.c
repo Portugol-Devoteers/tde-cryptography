@@ -1,9 +1,7 @@
-#ifdef DERIVE_KEY_TEST
-
 #include <stdio.h>
 #include "../derive-key.h"
-#include "test-utils.h"
-#include "../includes.h"
+#include "test.utils.h"
+#include "../utils.h"
 
 #define TESTS 6
 
@@ -24,7 +22,7 @@ void testDeriveKey()
   for (int i = 0; i < TESTS; i++)
   {
     printf("Teste com chave %s de tamanho %d\n", keysForTest[i], getKeyLength(keysForTest[i]));
-    unsigned char *salt = (unsigned char *)malloc(16 * sizeof(unsigned char));
+    unsigned char salt[16];
 
     short keyLength = getKeyLength(keysForTest[i]);
 
@@ -37,16 +35,15 @@ void testDeriveKey()
     unsigned char keyEncryptResult[keySize];
     unsigned char keyDecryptResult[keySize];
 
-    deriveKey(keysForTest[i], keyEncryptResult, &keyLength, &salt, 1);
+    deriveKey(keysForTest[i], keyEncryptResult, &keyLength, salt, Encrypt);
 
     // trocar 1 caracter do salt muda o resultado, por isso é seguro.
     // salt[0] = '@';
 
-    deriveKey(keysForTest[i], keyDecryptResult, &keyLength, &salt, -1);
+    deriveKey(keysForTest[i], keyDecryptResult, &keyLength, salt, Decrypt);
 
     eqVetor(keyEncryptResult, keyDecryptResult, keySize);
     printf("\n");
-    free(salt);
   }
   printf("========================================\n\n\n");
 }
@@ -57,4 +54,3 @@ int main()
   testDeriveKey();
   return 0;
 }
-#endif

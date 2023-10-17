@@ -1,4 +1,5 @@
-#include "test-utils.h"
+#include <stdio.h>
+#include <string.h>
 
 void printHexVetor(unsigned char *vetor, short vetorSize)
 {

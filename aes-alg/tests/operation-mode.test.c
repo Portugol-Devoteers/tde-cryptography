@@ -1,12 +1,8 @@
-#ifdef ECB_TEST
-
-/*
-
 #include <stdio.h>
-#include "../ecb.h"
-#include "test-utils.h"
+#include "../operation-mode.h"
+#include "test.utils.h"
 
-// TODO update this test to use the new ecb.h
+// TODO update this test to use the new operation-mode.h
 
 #define TESTS 10
 #define RANDOM_NUMBER_1_TO_ONE_MILLION() (1 + rand() % 1000000)
@@ -23,7 +19,7 @@ void testToBlocks()
     loren(plaintext, plaindataSize);
     printf("Teste com plaintext de tamanho %d\n", plaindataSize);
 
-    int plaindatagetBlockCount = getBlockCount(plaintext, 1);
+    int plaindatagetBlockCount = getBlockCount(plaintext);
     unsigned char dataBlocks[plaindatagetBlockCount][BLOCK_SIZE];
     unsigned char receiveBytes[plaindatagetBlockCount * 16];
     unsigned char expectBytes[plaindatagetBlockCount * 16];
@@ -52,6 +48,3 @@ int main()
   testToBlocks();
   return 0;
 }
-*/
-
-#endif

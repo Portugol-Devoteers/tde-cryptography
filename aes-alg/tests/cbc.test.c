@@ -1,8 +1,6 @@
-#ifdef CBC_TEST
-/* TODO atualizar este teste quando o cbc estiver atualizado
 #include <stdio.h>
 #include "../cbc.h"
-#include "test-utils.h"
+#include "test.utils.h"
 #include "../utils.h"
 #include <string.h>
 #include <stdlib.h>
@@ -34,7 +32,7 @@ void testCBC()
     unsigned char dataBlocksEncryptResult[plaindatagetBlockCount][BLOCK_SIZE];
     unsigned char dataBlocksDecryptResult[plaindatagetBlockCount][BLOCK_SIZE];
 
-    cbc(plaintext, key, iv, 1, dataBlocksEncryptResult);
+    cbc(plaintext, key, iv, Encrypt, dataBlocksEncryptResult);
 
     for (int i = 0; i < plaindatagetBlockCount; i++)
     {
@@ -42,7 +40,7 @@ void testCBC()
     }
     ciphertext[plaindatagetBlockCount * BLOCK_SIZE] = '\0';
 
-    cbc(ciphertext, key, iv, -1, dataBlocksDecryptResult);
+    cbc(ciphertext, key, iv, Decrypt, dataBlocksDecryptResult);
 
     unsigned char plaintextUC[plaindataSize];
     unsigned char ciphertextResult[plaindatagetBlockCount * BLOCK_SIZE];
@@ -68,5 +66,4 @@ int main()
 
   testCBC();
   return 0;
-}*/
-#endif
+}

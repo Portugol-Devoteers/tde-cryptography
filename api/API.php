@@ -3,9 +3,8 @@ $text = $_POST['text'];
 $key = $_POST['key'];
 $action = $_POST['action']; 
 
-
 // change "teste" for "main"
-$command = "teste $text $key $action 2>&1";
+$command = "main $text $key $action 2>&1";
 $result = exec($command);
 
 $response = [

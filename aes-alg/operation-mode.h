@@ -1,20 +1,40 @@
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+#include <openssl/rand.h>
 
-#include "ecb.h"
-#include "includes.h"
+#define BLOCK_SIZE 16
+#define SALT_SIZE 16
+#define DATA_SIZE_BYTES 4
 
-int getBlockCount(uint32_t dataSize, short operationType)
+/**
+ * @brief Calcula o número de blocos de dados necessários para armazenar a quantidade de dados especificada, considerando uma operação de criptografia.
+ *
+ * Esta função calcula o número de blocos de dados necessários para acomodar a quantidade de dados especificada, levando em consideração uma operação de criptografia.
+ *
+ * @param[in] dataSize Tamanho dos dados a serem armazenados.
+ * @param[in] operationType O tipo de operação (Encrypt ou Decrypt).
+ * @return O número de blocos de dados necessários.
+ */
+int getBlockCount(uint32_t dataSize, enum OperationType operationType)
 {
   // Calcula o número de blocos arredondando para cima usando ceil
   int blocks = (int)ceil((double)dataSize / BLOCK_SIZE);
 
   // Se a operação for de criptografia e o tamanho dos dados for múltiplo do tamanho do bloco, um novo bloco é adicionado
-  if (operationType == 1 && dataSize % BLOCK_SIZE == 0)
+  if (operationType == Encrypt && dataSize % BLOCK_SIZE == 0)
   {
     blocks++;
   }
   return blocks;
 }
 
+/**
+ * @brief Extrai o tamanho dos dados a partir dos primeiros 4 bytes de um vetor de dados.
+ *
+ * @param data Vetor de dados que contém os primeiros 4 bytes representando o tamanho.
+ * @return O tamanho dos dados extraídos.
+ */
 uint32_t getDataSize(unsigned char *data)
 {
   // Extrai os 4 bytes iniciais que representam o tamanho
@@ -28,12 +48,22 @@ uint32_t getDataSize(unsigned char *data)
   return bytesToUInt(dataSizeInBytes);
 }
 
-int ecb(unsigned char **data, unsigned char (*dataBlocks)[BLOCK_SIZE], unsigned char **salt, uint32_t dataSize, short operationType)
+/**
+ * @brief Implementa o modo de operação ECB (Electronic Codebook) para criptografia ou descriptografia.
+ *
+ * @param data Um ponteiro para o vetor de dados a ser processado.
+ * @param dataBlocks Uma matriz de blocos de dados resultantes.
+ * @param salt Um ponteiro para o vetor que armazena o "salt" usado na derivação da chave.
+ * @param dataSize Tamanho dos dados de entrada.
+ * @param operationType O tipo de operação a ser executada (Encrypt ou Decrypt).
+ * @return 0 se a operação for bem-sucedida; caso contrário, retorna um valor diferente.
+ */
+int ecb(unsigned char **data, unsigned char (*dataBlocks)[BLOCK_SIZE], unsigned char **salt, uint32_t dataSize, enum OperationType operationType)
 {
   // Calcula quantos bytes precisam ser removidos dos dados, dependendo da operação
   short bytesToRemove = DATA_SIZE_BYTES;
 
-  if (operationType == -1)
+  if (operationType == Decrypt)
   {
     // Se estiver descriptografando, o "salt" é copiado e removido dos dados
     memcpy((*salt), (*data) + DATA_SIZE_BYTES, SALT_SIZE);
@@ -63,7 +93,17 @@ int ecb(unsigned char **data, unsigned char (*dataBlocks)[BLOCK_SIZE], unsigned 
   return 0;
 }
 
-void invEcb(unsigned char (*dataBlocks)[BLOCK_SIZE], uint32_t dataSize, unsigned char **dataVector, int blocks, unsigned char **salt, short operationType)
+/**
+ * @brief Implementa a operação inversa do modo de operação ECB (Electronic Codebook) para recuperar o vetor de texto original.
+ *
+ * @param dataBlocks Matriz de blocos de dados resultantes do processo de criptografia ou descriptografia.
+ * @param dataSize Tamanho original dos dados de entrada.
+ * @param dataVector Um ponteiro para o vetor de texto recuperado.
+ * @param blocks O número de blocos de dados usados.
+ * @param salt Um ponteiro para o "salt" usado na derivação da chave.
+ * @param operationType O tipo de operação realizada (Encrypt ou Decrypt).
+ */
+void invEcb(unsigned char (*dataBlocks)[BLOCK_SIZE], uint32_t dataSize, unsigned char **dataVector, int blocks, unsigned char **salt, enum OperationType operationType)
 {
   // Calcula o tamanho final do vetor de dados com base no número de blocos
   int vectorSize = blocks * BLOCK_SIZE + DATA_SIZE_BYTES;
@@ -72,7 +112,7 @@ void invEcb(unsigned char (*dataBlocks)[BLOCK_SIZE], uint32_t dataSize, unsigned
   unsigned char lastByte = dataBlocks[blocks - 1][BLOCK_SIZE - 1];
 
   // Adiciona os 4 bytes que representam quantos bytes compõem os dados e o "salt" no início do vetor se for uma operação de criptografia
-  if (operationType == 1)
+  if (operationType == Encrypt)
   {
     vectorSize += SALT_SIZE;
     initdata += SALT_SIZE;

@@ -1,8 +1,6 @@
-#ifdef CORE_TEST
-
 #include <stdio.h>
 #include "../core.h"
-#include "test-utils.h"
+#include "test.utils.h"
 
 void addRoundKeyTest()
 {
@@ -150,4 +148,3 @@ int main()
   testMixColumn();
   return 0;
 }
-#endif
