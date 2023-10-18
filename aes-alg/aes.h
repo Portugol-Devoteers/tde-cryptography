@@ -102,7 +102,7 @@ void aesBlock(unsigned char *state, unsigned char *roundkey, short keyLength, en
  * @param[in] key A chave a ser usada na operação.
  * @return 0 se a operação foi bem-sucedida, -1 em caso de erro.
  */
-int aes(unsigned char **data, enum OperationType operationType, char *key)
+int aes(unsigned char **data, enum OperationType operationType, const char *key)
 {
   unsigned char roundkey[16];
   short keyLength = getKeyLength(key);

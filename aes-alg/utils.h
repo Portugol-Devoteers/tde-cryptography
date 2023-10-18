@@ -129,7 +129,7 @@ void extractXY(unsigned char hex, int *x, int *y)
  * @param[in,out] vector O ponteiro para ponteiro que representa o vetor a ser realocado.
  * @param[in] newVectorSize O novo tamanho desejado para o vetor.
  */
-void reallocMemory(unsigned char **vector, uint32_t newVectorSize)
+int reallocMemory(unsigned char **vector, uint32_t newVectorSize)
 {
     unsigned char *newVector = (unsigned char *)realloc(*vector, newVectorSize * sizeof(unsigned char));
     if (newVector != NULL)
@@ -139,7 +139,9 @@ void reallocMemory(unsigned char **vector, uint32_t newVectorSize)
     else
     {
         printf("Algo deu errado ao realocar a memória.\n");
+        return 1;
     }
+    return 0;
 }
 
 /**
@@ -179,7 +181,7 @@ void removeBytes(unsigned char **data, uint32_t dataSize, short bytesToRemove)
     // Usando memcpy para copiar o trecho de data
     memcpy(*data, *data + bytesToRemove, copySize);
     // realloc
-    reallocMemory(data, vectorSize - bytesToRemove);
+    reallocMemory(data, copySize);
 }
 
 /**
@@ -279,6 +281,100 @@ short getRoundsCount(short keyLength)
         return 14;
     default:
         return -1;
+    }
+}
+
+/**
+ * @brief Converte uma string em um vetor de bytes e armazena-o em um vetor de dados.
+ *
+ * Esta função converte uma string em um vetor de bytes e armazena-o no vetor de dados fornecido. Ela também redimensiona o vetor de dados, se necessário, para acomodar os bytes da string.
+ *
+ * @param text A string a ser convertida em bytes.
+ * @param vectorSize O tamanho atual do vetor de dados.
+ * @param data Um ponteiro para o vetor de dados onde os bytes da string serão armazenados.
+ * @param start A posição inicial no vetor de dados para armazenar os bytes da string.
+ */
+void stringToBytes(const char *text, size_t vectorSize, unsigned char **data, uint32_t start)
+{
+    if (reallocMemory(data, vectorSize) == 0)
+    {
+        for (size_t i = start; i < vectorSize; i++)
+        {
+            (*data)[i] = (unsigned char)text[i - start];
+        }
+    }
+}
+
+/**
+ * @brief Converte um vetor de bytes em uma string.
+ *
+ * Esta função aloca memória para uma string e copia os bytes do vetor para a string, incluindo o caractere nulo '\0' no final.
+ *
+ * @param bytes Um ponteiro para o vetor de bytes a ser convertido em uma string.
+ * @param size O tamanho do vetor de bytes.
+ * @return Um ponteiro para a string recém-criada. O chamador é responsável por liberar a memória alocada quando não precisar mais da string.
+ *
+ * @note Certifique-se de liberar a memória alocada para a string usando a função `free` quando não precisar mais dela.
+ */
+char *bytesToString(const unsigned char *bytes, size_t size)
+{
+    // Aloca memória para a string, incluindo espaço para o caractere nulo '\0'
+    char *str = (char *)malloc(size + 1);
+
+    if (str == NULL)
+    {
+        return NULL; // Erro de alocação de memória
+    }
+
+    // Copia os bytes para a string
+    memcpy(str, bytes, size);
+
+    // Adiciona o caractere nulo ao final da string
+    str[size] = '\0';
+
+    return str;
+}
+
+/**
+ * @brief Adiciona um prefixo de tamanho a um vetor de bytes.
+ *
+ * Esta função aloca memória para um novo vetor de bytes que contém um prefixo
+ * de 4 bytes representando a quantidade de bytes em data
+ *
+ * @param data O ponteiro para o vetor de bytes.
+ * @param dataSize o tamanho dos dados
+ *
+ * @return 1 se a operação for bem-sucedida, 0 caso contrário.
+ */
+int addSizePrefix(unsigned char **data, size_t dataSize)
+{
+    unsigned char bytes[4];
+    if (reallocMemory(data, dataSize + 4) == 0)
+    {
+        // Adiciona a contagem de bytes no início
+        uintToBytes((uint32_t)dataSize, bytes);
+
+        // Copia os bytes de contagem no início
+        memcpy(*data, bytes, 4);
+        return 1;
+    }
+    return 0;
+}
+
+void removeSizePrefix(unsigned char **data)
+{
+    if (*data == NULL)
+    {
+        return;
+    }
+
+    // Obtém o tamanho a partir dos primeiros 4 bytes
+    uint32_t size = bytesToUInt(*data);
+
+    if (size >= 4)
+    {
+        // Remove os primeiros 4 bytes
+        removeBytes(data, size, 4);
     }
 }
 

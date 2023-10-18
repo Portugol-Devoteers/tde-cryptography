@@ -17,11 +17,11 @@
  * @param operationType O tipo de operação (Encrypt ou Decrypt) para determinar o uso do "salt".
  * @return Retorna 0 se a derivação for bem-sucedida; caso contrário, retorna um valor diferente.
  */
-int deriveKey(char *key, unsigned char *derivedKey, short *keyLength, unsigned char **salt, enum OperationType operationType)
+int deriveKey(const char *key, unsigned char *derivedKey, short *keyLength, unsigned char **salt, enum OperationType operationType)
 {
     if (operationType == Encrypt)
     {
-        RAND_bytes((*salt), sizeof((*salt)));
+        RAND_bytes((*salt), 16);
     }
 
     int iterations = 10000;
