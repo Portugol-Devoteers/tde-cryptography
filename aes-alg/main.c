@@ -4,6 +4,7 @@
 #include "aes.h"
 #include "utils.h"
 #include "base64.h"
+#include <stdint.h>
 
 #ifndef PROGRAM_VERSION // Fazendo isso é possível usar macro como se fosse váriaveis ambiente
 #define PROGRAM_VERSION "1.0.0"

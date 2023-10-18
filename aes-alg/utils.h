@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 // Enumeração para o tipo de operação (criptografar ou descriptografar)
 enum OperationType
@@ -174,7 +175,7 @@ unsigned char getEorLValue(unsigned char n, const unsigned char (*table)[16])
  */
 void removeBytes(unsigned char **data, uint32_t dataSize, short bytesToRemove)
 {
-    u_int32_t vectorSize = dataSize + bytesToRemove;
+    uint32_t vectorSize = dataSize + bytesToRemove;
     // Inicie a partir da posição onde os bytes devem ser removidos
     size_t copySize = vectorSize - bytesToRemove; // Tamanho do trecho a ser copiado
 
