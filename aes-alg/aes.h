@@ -109,7 +109,6 @@ int aes(unsigned char **data, enum OperationType operationType, const char *key)
   uint32_t dataSize = getDataSize(*data);
   int blocks = getBlockCount(dataSize, operationType);
   unsigned char stateBlocks[blocks][16];
-  unsigned char *salt = (unsigned char *)malloc(16 * sizeof(unsigned char));
 
   if (keyLength == -1)
   {
@@ -117,10 +116,10 @@ int aes(unsigned char **data, enum OperationType operationType, const char *key)
   }
 
   // Modo de operação.
-  ecb(data, stateBlocks, &salt, dataSize, operationType);
+  ecb(data, stateBlocks, dataSize, operationType);
 
   // Deriva a chave
-  deriveKey(key, roundkey, &keyLength, &salt, operationType);
+  keyLength = deriveKey(key, roundkey, keyLength);
 
   for (int i = 0; i < blocks; i++)
   {
@@ -128,10 +127,8 @@ int aes(unsigned char **data, enum OperationType operationType, const char *key)
   }
 
   // Modo de operação.
-  invEcb(stateBlocks, dataSize, data, blocks, &salt, operationType);
+  invEcb(stateBlocks, dataSize, data, blocks, operationType);
 
-  // Limpa a memória
-  free(salt);
   return 0;
 }
 

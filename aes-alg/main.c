@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "aes.h"
 #include "utils.h"
-#include "base64.h"
 #include <stdint.h>
 
 #ifndef PROGRAM_VERSION // Fazendo isso é possível usar macro como se fosse váriaveis ambiente
@@ -128,12 +127,12 @@ int aes_api(const char *text, const char *key, int action, char **result)
   }
   else
   {
-    // Se for descriptografia, decodifica o base64
-    base64Decode(text, dataSize, &data);
+    // Se for descriptografia, decodifica tranforma a string de bytes em um vetor de hexadecimais
+    hexStringToBytes(text, dataSize, &data);
     if (data == NULL)
     {
-      printf("Erro ao decodificar base64.\n");
-      return 4; // Erro ao decodificar base64
+      printf("Erro ao transformar string.\n");
+      return 4; // Erro ao transformar
     }
   }
 
@@ -151,14 +150,14 @@ int aes_api(const char *text, const char *key, int action, char **result)
   }
   else
   {
-    // Se for criptografia, converte o resultado para base64
-    dataSizeResult += 16 + 4; // salt + tamanho dos dados
-    *result = base64Encode(data, dataSizeResult);
+    // Se for criptografia, converte o resultado para string de bytes
+    dataSizeResult += 4; // bytes que representam o tamanho dos dados
+    *result = bytesToHexString(data, dataSizeResult);
 
     if (result == NULL)
     {
       free(data);
-      printf("Erro ao codificar em base64.\n");
+      printf("Erro ao transformar string.\n");
       return 4; // Erro ao codificar em base64
     }
   }

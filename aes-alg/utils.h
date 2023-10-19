@@ -379,4 +379,43 @@ void removeSizePrefix(unsigned char **data)
     }
 }
 
+// Função para converter um vetor de bytes em uma string
+char *bytesToHexString(const unsigned char *bytes, uint32_t length)
+{
+    char *hexString = (char *)malloc(length * 2 + 1); // 2 caracteres por byte + 1 para o caractere nulo
+    if (hexString == NULL)
+    {
+        return NULL; // Falha na alocação de memória
+    }
+
+    for (uint32_t i = 0; i < length; i++)
+    {
+        sprintf(&hexString[i * 2], "%02x", bytes[i]);
+    }
+    hexString[length * 2] = '\0'; // Adiciona o caractere nulo no final
+
+    return hexString;
+}
+
+// Função para converter uma string em bytes
+void hexStringToBytes(const char *input, uint32_t length, unsigned char **output)
+{
+    if (length % 2 != 0)
+    {
+        *output = NULL; // Tamanho ímpar não pode ser convertido corretamente
+        return;
+    }
+
+    *output = (unsigned char *)malloc(length / 2);
+    if (*output == NULL)
+    {
+        return; // Falha na alocação de memória
+    }
+
+    for (uint32_t i = 0; i < length; i += 2)
+    {
+        sscanf(&input[i], "%2hhx", &(*output)[i / 2]);
+    }
+}
+
 #endif

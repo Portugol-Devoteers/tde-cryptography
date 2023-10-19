@@ -5,6 +5,7 @@
 
 #define TESTS 6
 
+// TODO update this test
 void testDeriveKey()
 {
   printTestDescribe("testDeriveKey");

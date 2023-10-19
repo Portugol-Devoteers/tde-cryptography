@@ -51,15 +51,7 @@
       "label": "C/C++: clang",
       "type": "shell",
       "command": "gcc",
-      "args": [
-        "-o",
-        "${fileBasenameNoExtension}",
-        "${file}",
-        "-I/opt/local/libexec/openssl3/include",
-        "-L/opt/local/libexec/openssl3/lib",
-        "-lssl",
-        "-lcrypto"
-      ],
+      "args": ["-o", "${fileBasenameNoExtension}", "${file}"],
       "group": "build"
     }
   ]
