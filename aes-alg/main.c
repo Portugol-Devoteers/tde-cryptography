@@ -65,30 +65,6 @@ int validateStringParam(int i, int argc, char *argv[], const char *paramName, ch
   }
 }
 
-int validateIntParam(int i, int argc, char *argv[], const char *paramName, int *paramValue)
-{
-  if (i < argc)
-  {
-    char *end;
-    *paramValue = strtol(argv[i], &end, 10);
-
-    if (*end == '\0')
-    {
-      return 1; // Conversão bem-sucedida
-    }
-    else
-    {
-      printErrorMessage(strcat("Valor inválido para o parâmetro ", paramName));
-      return 0;
-    }
-  }
-  else
-  {
-    printErrorMessage(strcat("Falta o valor para o parâmetro ", paramName));
-    return 0;
-  }
-}
-
 /* ------- */
 
 /**
@@ -98,7 +74,7 @@ int validateIntParam(int i, int argc, char *argv[], const char *paramName, int *
  * @param key A chave.
  * @param action A ação a ser executada (1 para criptografia, -1 para descriptografia).
  * @param result O ponteiro para o resultado.
- * @return 0 se a operação foi bem-sucedida, 1 se a operação falhou, 2 se houve erro de alocação de memória, 3 se houve erro ao adicionar o tamanho dos dados, 4 se houve erro ao codificar em base64.
+ * @return 0 se a operação foi bem-sucedida, 1 se a operação falhou, 2 se houve erro de alocação de memória, 3 se houve erro ao adicionar o tamanho dos dados, 4 se houve erro ao transformar os gexs para string
  */
 int aes_api(const char *text, const char *key, int action, char **result)
 {
@@ -127,7 +103,7 @@ int aes_api(const char *text, const char *key, int action, char **result)
   }
   else
   {
-    // Se for descriptografia, decodifica tranforma a string de bytes em um vetor de hexadecimais
+    // Se for descriptografia, decodifica tranforma a string de hexadecimais em um vetor de bytes
     hexStringToBytes(text, dataSize, &data);
     if (data == NULL)
     {
@@ -178,7 +154,7 @@ int main(int argc, char *argv[])
 
   char *text = NULL;
   char *key = NULL;
-  int action = 0;
+  char *action = NULL;
 
   // Processa os argumentos
   for (int i = 1; i < argc; i++)
@@ -212,14 +188,14 @@ int main(int argc, char *argv[])
     else if (strcmp(argv[i], "--action") == 0)
     {
       i++;
-      if (validateIntParam(i, argc, argv, "--action", &action) == 0)
+      if (validateStringParam(i, argc, argv, "--action", &action) == 0)
       {
         return 1;
       }
     }
   }
-
-  if (!validateArguments(text, key, action))
+  int actionInt = atoi(action);
+  if (!validateArguments(text, key, actionInt))
   {
     printErrorMessage("Comando inválido");
     return 1;
@@ -227,9 +203,9 @@ int main(int argc, char *argv[])
 
   char *result = NULL;
 
-  if (aes_api(text, key, action, &result) == 0)
+  if (aes_api(text, key, actionInt, &result) == 0)
   {
-    printf("Resultado: %s\n", result);
+    printf("%s\n", result);
   }
   // Limpa a memória
   free(result);
