@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <openssl/rand.h>
-#include <openssl/evp.h>
 #include "utils.h"
 
 short deriveKey(const char *key, unsigned char *derivedKey, short keyLength)

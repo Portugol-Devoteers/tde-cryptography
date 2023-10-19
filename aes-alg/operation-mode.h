@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include <openssl/rand.h>
 
 #define BLOCK_SIZE 16
 #define DATA_SIZE_BYTES 4
