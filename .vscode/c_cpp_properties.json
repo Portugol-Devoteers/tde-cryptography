@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "C:\\Program Files\\OpenSSL-Win64",
+                "${workspaceFolder}/aes-alg/openssl",
+                "${workspaceFolder}/aes-alg",
+                "D:\\9 - Faculdade\\2º Semestre\\tde-cryptography\\aes-alg"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "cStandard": "c99",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "macos-gcc-x86",
+            "compilerPath": ""
+        }
+    ],
+    "version": 4
+}

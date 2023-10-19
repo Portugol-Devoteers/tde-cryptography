@@ -3,16 +3,14 @@ $text = $_POST['text'];
 $key = $_POST['key'];
 $action = $_POST['action']; 
 
+$command = "main --text \"$text\" --key \"$key\" --action ".intval($action)." 2>&1";
 
-// change "teste" for "main"
-$command = "teste $text $key $action 2>&1";
 $result = exec($command);
-
 $response = [
-    "action" => $action == 1 ? 'crypto' : 'decrypto',
+    "action" => intval($action),
     "key" => $key,
     "text" => $text,
-    "output" => base64_encode(trim($result))
+    "output" => $result
 ];
 
 echo json_encode($response);

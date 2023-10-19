@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "aes.h": "c",
+        "derive-key.h": "c",
+        "ecb.h": "c",
+        "utils.h": "c",
+        "macros.h": "c",
+        "evp.h": "c",
+        "rand.h": "c",
+        "core.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
+}
