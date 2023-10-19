@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@1,200&family=Poppins:wght@300&display=swap');
+
+:root {
+    --corPrimaria: #171717;
+    --corTransparente: #22212140;
+    --dropShadow: #8a818110;
+    --corBotao: #111111;
+    --bordaBotao: #19181840;
+    --corFundo: #0f0f0f;
+    --cinzaPrimario: #4c4c4c;
+    --hoverCopy: #302f2f;
+    --inputPlaceholder: #ffffff50;
+    --contentWidth: 500px;
+    --borderRadius: 6px;
+    --hoverWhite: rgb(91, 91, 91);
+}
+
+* {
+    margin: 0;
+    /* padding: 0; */
+}
+
+.hidden {
+    display: none;
+}
+
+body {
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background-color: var(--corFundo);
+}
+
+section {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: var(--contentWidth);
+}
+
+.content-top {
+    position: relative;
+    width: 100%;
+    background-color: var(--corPrimaria);
+    border-radius: var(--borderRadius);
+    border: 1px solid var(--corTransparente);
+    margin-bottom: 10px;
+    /* padding: 0px 3px 0px 0px; */
+}
+
+.select {
+    padding-left: 20px;
+    padding-top: 10px;
+    color: var(--cinzaPrimario);
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+    max-width: 200px;
+}
+
+.select:hover .select-icon-arrow {
+    color: var(--hoverCopy);
+}
+
+.select-icon-arrow {
+    cursor: pointer;
+    position: absolute;
+    color: var(--cinzaPrimario);
+    margin-top: 7px;
+    margin-left: 20px;
+    font-size: 12px;
+    transition: 0.2s all;
+    transform: rotate(180deg);
+}
+
+.copy-icon {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    color: var(--cinzaPrimario);
+    cursor: pointer;
+    transition: 0.2s all;
+}
+
+.copy-icon:hover {
+    color: var(--hoverCopy);
+}
+
+.copy-text {
+    position: absolute;
+    right: 40px;
+    top: 10px;
+    color: var(--cinzaPrimario);
+}
+
+.options {
+    margin-left: 15px;
+    position: absolute;
+    border-radius: var(--borderRadius);
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+}
+
+.option {
+    cursor: pointer;
+    color: var(--cinzaPrimario);
+    background-color: var(--corPrimaria);
+    padding: 10px;
+    padding-left: 5px;
+    transition: 0.2s all;
+}
+
+.option:hover {
+    color: var(--hoverCopy);
+}
+
+.text {
+    resize: none;
+    outline: none;
+    background-color: var(--corPrimaria);
+    color: white;
+    padding: 20px;
+    width: 100%;
+    font-weight: 500;
+    border: none;
+}
+
+.content-bottom {
+    width: 100%;
+    position: relative;
+}
+
+.key {
+    color: white;
+    padding: 15px;
+    background-color: var(--corPrimaria);
+    outline: none;
+    border: 1px solid var(--corTransparente);
+    border-radius: var(--borderRadius);
+    width: 100%;
+    font-weight: 500;
+}
+
+.run-button {
+    position: absolute;
+    right: 10px;
+    cursor: pointer;
+    top: 50%;
+    transform: translateY(-50%);
+    color: white;
+    padding: 10px 25px;
+    background-color: black;
+    border-radius: var(--borderRadius);
+    border: 1px solid var(--bordaBotao);
+    transition: 0.2s all;
+    width: 81.6562px;
+}
+.run-button:hover {
+    background-color: var(--corFundo);
+}
+.text::-webkit-scrollbar {
+    width: 8px; /* Largura da barra de rolagem */
+}
+
+.text::-webkit-scrollbar-track {
+    background: #ffffff00; /* Cor de fundo da faixa da barra de rolagem */
+}
+
+.text::-webkit-scrollbar-thumb {
+    background: var(--cinzaPrimario); /* Cor da alça da barra de rolagem */
+    border-radius: 4px; /* Borda arredondada da alça da barra de rolagem */
+    padding: 5px; /* Adicionar uma margem de 5 pixels entre a borda e a alça */
+}
+
+.text::-webkit-scrollbar-thumb:hover {
+    background: var(
+        --hoverWhite
+    ); /* Cor da alça da barra de rolagem em hover */
+}
+
+@media (max-width: 550px) {
+    section {
+        width: 100%;
+    }
+    .content {
+        width: 90%;
+    }
+    body {
+        padding: 0 10px;
+    }
+}
