@@ -1,8 +1,8 @@
 #include <stdio.h>
-#include "../ecb.h"
-#include "test-utils.h"
+#include "../operation-mode.h"
+#include "test.utils.h"
 
-// TODO update this test to use the new ecb.h
+// TODO update this test to use the new operation-mode.h
 
 #define TESTS 10
 #define RANDOM_NUMBER_1_TO_ONE_MILLION() (1 + rand() % 1000000)

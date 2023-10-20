@@ -1,10 +1,11 @@
 #include <stdio.h>
 #include "../derive-key.h"
-#include "test-utils.h"
+#include "test.utils.h"
 #include "../utils.h"
 
 #define TESTS 6
 
+// TODO update this test
 void testDeriveKey()
 {
   printTestDescribe("testDeriveKey");

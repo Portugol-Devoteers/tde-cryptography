@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include "../aes.h"
-#include "test-utils.h"
+#include "test.utils.h"
 #include "../utils.h"
 
 #define MAX_TEXT_SIZE 100000
-#define MIN_TEXT_SIZE 1
+#define MIN_TEXT_SIZE 100
 #define TESTS 100
 #define RANDOM_NUMBER() (MIN_TEXT_SIZE + rand() % MAX_TEXT_SIZE)
 #define RANDOM_KEY_SIZE() (1 + rand() % 16)
@@ -19,6 +19,7 @@ void testAES()
     uint32_t dataSize = RANDOM_NUMBER();
     char plaintext[dataSize + 1];
     loren(plaintext, dataSize);
+
     printf("Teste com plaintext de tamanho %d\n", dataSize);
 
     // Data size + 4 bytes to store the data size

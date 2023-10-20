@@ -9,9 +9,9 @@ $(document).ready(() => {
 // verification and request
 $('form').on('submit', (e) => {
     e.preventDefault();
+    const action = $('.select').data('action');
     const text = $('.text').val().trim();
     const key = $('.key').val().trim();
-    const action = $('.select').data('action');
 
     if (text == '' || key == '') {
         $('.status').fadeIn();
@@ -29,7 +29,7 @@ $('form').on('submit', (e) => {
             dataType: 'json',
         })
             .done((response) => {
-                $('.text').val(atob(response.output));
+                $('.text').val(response.output);
                 $('.run-button').prop('disabled', false);
                 $('.run-button').html('Run');
             })
