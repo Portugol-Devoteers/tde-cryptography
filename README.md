@@ -10,4 +10,4 @@ para executar o programa por CLI:
 para executar o front:
 
 - inicie um servidor apache (pelo xampp, por exemplo), para a API em php funcionar.
-- abra o index.html
+- acesse o link "http://localhost/"
