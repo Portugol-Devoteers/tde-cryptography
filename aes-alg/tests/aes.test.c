@@ -3,9 +3,9 @@
 #include "test.utils.h"
 #include "../utils.h"
 
-#define MAX_TEXT_SIZE 100000
-#define MIN_TEXT_SIZE 100
-#define TESTS 100
+#define MAX_TEXT_SIZE 1000000
+#define MIN_TEXT_SIZE 100000
+#define TESTS 10
 #define RANDOM_NUMBER() (MIN_TEXT_SIZE + rand() % MAX_TEXT_SIZE)
 #define RANDOM_KEY_SIZE() (1 + rand() % 16)
 #define BLOCK_SIZE 16
